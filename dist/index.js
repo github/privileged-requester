@@ -1,6 +1,238 @@
 require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ 2932:
+/***/ ((module, __webpack_exports__, __nccwpck_require__) => {
+
+"use strict";
+__nccwpck_require__.a(module, async (__webpack_handle_async_dependencies__) => {
+__nccwpck_require__.r(__webpack_exports__);
+/* harmony import */ var _modules_github_provider__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(5723);
+/* harmony import */ var _modules_pull_request__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(368);
+/* harmony import */ var _modules_privileged_requester__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(3854);
+
+
+
+
+class Runner {
+  constructor(pullRequest, privilegedRequesters) {
+    this.pullRequest = pullRequest
+    this.privilegedRequesters = privilegedRequesters
+  }
+
+
+  async processCommits(privileged_requester_username) {
+    // Check all commits of the PR to verify that they are all from the privileged requester, otherwise return from the check
+    for (const [, commit] of Object.entries(this.pullRequest.listCommits())) {
+      let commitAuthor = commit.author.login.toLowerCase();
+
+      if (commitAuthor !== privileged_requester_username) {
+        console.log(`Unexpected commit author found by ${commitAuthor}! Commits should be authored by ${privileged_requester_username} I will not proceed with the privileged reviewer process.`);
+        return false;
+      }
+    }
+    return true;
+  }
+
+  async processLabels(privileged_requester_config) {
+    // Check labels of the PR to make sure that they match the privileged_requester_config, otherwise return from the check
+    const prLabels = this.pullRequest.listLabels()
+    const prLabelArray = [];
+
+    for (const [, prLabel] of Object.entries(prLabels)) {
+      let prLabelName = prLabel.name;
+      prLabelArray.push(prLabelName);
+    }
+
+    let differences = prLabelArray.filter(x => !privileged_requester_config.labels.includes(x));
+    if (differences.length !== 0) {
+      console.log(`Invalid label(s) found: ${differences}. I will not proceed with the privileged reviewer process.`);
+      return false;
+    }
+    return true;
+  }
+
+  async run() {
+    const requesters = await this.privilegedRequesters.getRequesters()
+    for (const [privileged_requester_username, privileged_requester_config] of Object.entries(requesters)) {
+      // console.log(privileged_requester_username);
+      // If privileged_requester_username is not the creator of the PR, move on
+      // If privileged_requester_username is the creator of the PR, check the remaining config
+      console.log(`PR creator is ${this.pullRequest.prCreator}. Testing against ${privileged_requester_username}`)
+      if (this.pullRequest.prCreator !== privileged_requester_username) {
+        continue;
+      }
+      await this.processPrivilegedReviewer(privileged_requester_username, privileged_requester_config)
+    }
+  }
+
+  async processPrivilegedReviewer(privileged_requester_username, privileged_requester_config) {
+
+    console.log(`Privileged requester ${privileged_requester_username} found. Checking PR criteria against the privileged requester configuration.`);
+
+    let commits = await this.processCommits(privileged_requester_username)
+    if (commits === false) {
+      return 0;
+    }
+
+    let labels = await this.processLabels(privileged_requester_config)
+    if (labels === false) {
+      return 0;
+    }
+
+    // If we've gotten this far, the commits are all from the privileged requestor and the labels are correct
+    // We can now approve the PR
+    console.log("Approving the PR for a privileged reviewer.")
+    await this.pullRequest.approve()
+    console.log("PR approved, all set!")
+  }
+}
+
+const core = __nccwpck_require__(2186);
+const myToken = core.getInput('myToken');
+const provider = new _modules_github_provider__WEBPACK_IMPORTED_MODULE_0__/* .GitHubProvider */ .C(myToken);
+const pullRequest = new _modules_pull_request__WEBPACK_IMPORTED_MODULE_1__/* .PullRequest */ .i(provider);
+const privilegedRequester = new _modules_privileged_requester__WEBPACK_IMPORTED_MODULE_2__/* .PrivilegedRequester */ .b(provider);
+const runner = new Runner(pullRequest, privilegedRequester)
+await runner.run();
+
+__webpack_handle_async_dependencies__();
+}, 1);
+
+/***/ }),
+
+/***/ 5723:
+/***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
+
+"use strict";
+/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
+/* harmony export */   "C": () => (/* binding */ GitHubProvider)
+/* harmony export */ });
+const github = __nccwpck_require__(5438);
+const core = __nccwpck_require__(2186);
+
+
+
+class GitHubProvider {
+    constructor(token) {
+        this.token = token;
+        this.octokit = github.getOctokit(token);
+    }
+
+    async createReview(prNumber, reviewEvent) {
+        await this.octokit.rest.pulls.createReview({
+            owner: github.context.repo.owner,
+            repo: github.context.repo.repo,
+            pull_number: prNumber,
+            event: reviewEvent
+        });
+    }
+
+    async getConfigContent() {
+        const { data: configContent } = await this.octokit.rest.repos.getContent({
+            owner: github.context.repo.owner,
+            repo: github.context.repo.repo,
+            path: core.getInput('path'),
+            mediaType: { format: "raw" }
+        });
+        return configContent
+    }
+
+    async listPRCommits(prNumber) {
+        const { data: prCommits } = await this.octokit.rest.pulls.listCommits({
+            owner: github.context.repo.owner,
+            repo: github.context.repo.repo,
+            pull_number: prNumber
+        });
+        return prCommits
+    }
+
+    async listLabelsOnPR(prNumber) {
+        const { data: prLabels } = await this.octokit.rest.issues.listLabelsOnIssue({
+            owner: github.context.repo.owner,
+            repo: github.context.repo.repo,
+            issue_number: prNumber
+        });
+        return prLabels
+    }
+}
+
+/***/ }),
+
+/***/ 3854:
+/***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
+
+"use strict";
+/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
+/* harmony export */   "b": () => (/* binding */ PrivilegedRequester)
+/* harmony export */ });
+
+
+const yaml = __nccwpck_require__(1917);
+
+class PrivilegedRequester {
+    constructor(provider) {
+        this.github = provider;
+        this.requesters = false;
+    }
+
+    async getRequesters() {
+        if (this.requesters === false) {
+            const config = await this.github.getConfigContent();
+            this.configContents = yaml.load(config);
+            this.requesters = this.configContents["requesters"];
+        }
+        return this.requesters
+    }
+}
+
+
+/***/ }),
+
+/***/ 368:
+/***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
+
+"use strict";
+/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
+/* harmony export */   "i": () => (/* binding */ PullRequest)
+/* harmony export */ });
+/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(2186);
+/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__nccwpck_require__.n(_actions_core__WEBPACK_IMPORTED_MODULE_0__);
+
+
+
+
+class PullRequest {
+    constructor(provider) {
+        const core = __nccwpck_require__(2186);
+        this.github = provider;
+        this.prCreator = core.getInput('prCreator').toLowerCase();
+        this.prNumber = core.getInput('prNumber');
+        this.prCommits = false
+        this.prLabels = false
+    }
+
+    async approve() {
+        await this.github.createReview(this.prNumber, "APPROVE")
+    }
+
+    async listCommits() {
+        if (this.prCommits === false) {
+            this.prCommits = await this.github.listPRCommits(this.prNumber)
+        }
+        return this.prCommits
+    }
+
+    async listLabels() {
+        if (this.prLabels === false) {
+            this.prLabels = await this.github.listLabelsOnPR(this.prNumber)
+        }
+        return this.prLabels
+    }
+}
+
+/***/ }),
+
 /***/ 7351:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -13323,6 +13555,109 @@ module.exports = require("zlib");
 /******/ 	}
 /******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/async module */
+/******/ 	(() => {
+/******/ 		var webpackThen = typeof Symbol === "function" ? Symbol("webpack then") : "__webpack_then__";
+/******/ 		var webpackExports = typeof Symbol === "function" ? Symbol("webpack exports") : "__webpack_exports__";
+/******/ 		var completeQueue = (queue) => {
+/******/ 			if(queue) {
+/******/ 				queue.forEach((fn) => (fn.r--));
+/******/ 				queue.forEach((fn) => (fn.r-- ? fn.r++ : fn()));
+/******/ 			}
+/******/ 		}
+/******/ 		var completeFunction = (fn) => (!--fn.r && fn());
+/******/ 		var queueFunction = (queue, fn) => (queue ? queue.push(fn) : completeFunction(fn));
+/******/ 		var wrapDeps = (deps) => (deps.map((dep) => {
+/******/ 			if(dep !== null && typeof dep === "object") {
+/******/ 				if(dep[webpackThen]) return dep;
+/******/ 				if(dep.then) {
+/******/ 					var queue = [];
+/******/ 					dep.then((r) => {
+/******/ 						obj[webpackExports] = r;
+/******/ 						completeQueue(queue);
+/******/ 						queue = 0;
+/******/ 					});
+/******/ 					var obj = {};
+/******/ 												obj[webpackThen] = (fn, reject) => (queueFunction(queue, fn), dep.catch(reject));
+/******/ 					return obj;
+/******/ 				}
+/******/ 			}
+/******/ 			var ret = {};
+/******/ 								ret[webpackThen] = (fn) => (completeFunction(fn));
+/******/ 								ret[webpackExports] = dep;
+/******/ 								return ret;
+/******/ 		}));
+/******/ 		__nccwpck_require__.a = (module, body, hasAwait) => {
+/******/ 			var queue = hasAwait && [];
+/******/ 			var exports = module.exports;
+/******/ 			var currentDeps;
+/******/ 			var outerResolve;
+/******/ 			var reject;
+/******/ 			var isEvaluating = true;
+/******/ 			var nested = false;
+/******/ 			var whenAll = (deps, onResolve, onReject) => {
+/******/ 				if (nested) return;
+/******/ 				nested = true;
+/******/ 				onResolve.r += deps.length;
+/******/ 				deps.map((dep, i) => (dep[webpackThen](onResolve, onReject)));
+/******/ 				nested = false;
+/******/ 			};
+/******/ 			var promise = new Promise((resolve, rej) => {
+/******/ 				reject = rej;
+/******/ 				outerResolve = () => (resolve(exports), completeQueue(queue), queue = 0);
+/******/ 			});
+/******/ 			promise[webpackExports] = exports;
+/******/ 			promise[webpackThen] = (fn, rejectFn) => {
+/******/ 				if (isEvaluating) { return completeFunction(fn); }
+/******/ 				if (currentDeps) whenAll(currentDeps, fn, rejectFn);
+/******/ 				queueFunction(queue, fn);
+/******/ 				promise.catch(rejectFn);
+/******/ 			};
+/******/ 			module.exports = promise;
+/******/ 			body((deps) => {
+/******/ 				if(!deps) return outerResolve();
+/******/ 				currentDeps = wrapDeps(deps);
+/******/ 				var fn, result;
+/******/ 				var promise = new Promise((resolve, reject) => {
+/******/ 					fn = () => (resolve(result = currentDeps.map((d) => (d[webpackExports]))));
+/******/ 					fn.r = 0;
+/******/ 					whenAll(currentDeps, fn, reject);
+/******/ 				});
+/******/ 				return fn.r ? promise : result;
+/******/ 			}).then(outerResolve, reject);
+/******/ 			isEvaluating = false;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__nccwpck_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__nccwpck_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__nccwpck_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__nccwpck_require__.o(definition, key) && !__nccwpck_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	(() => {
 /******/ 		// define __esModule on exports
@@ -13339,131 +13674,13 @@ module.exports = require("zlib");
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be in strict mode.
-(() => {
-"use strict";
-// ESM COMPAT FLAG
-__nccwpck_require__.r(__webpack_exports__);
-
-;// CONCATENATED MODULE: ./modules/github-provider.js
-const github = __nccwpck_require__(5438);
-const core = __nccwpck_require__(2186);
-
-
-
-class GitHubProvider {
-    constructor(token) {
-        this.token = token;
-        this.octokit = github.getOctokit(token);
-    }
-
-    async createReview(prNumber, reviewEvent) {
-        await this.octokit.rest.pulls.createReview({
-            owner: github.context.repo.owner,
-            repo: github.context.repo.repo,
-            pull_number: prNumber,
-            event: reviewEvent
-        });
-    }
-
-    async getConfigContent() {
-        const { data: configContent } = await this.octokit.rest.repos.getContent({
-            owner: github.context.repo.owner,
-            repo: github.context.repo.repo,
-            path: core.getInput('path'),
-            mediaType: { format: "raw" }
-        });
-        return configContent
-    }
-
-    async listPRCommits(prNumber) {
-        const { data: prCommits } = await this.octokit.rest.pulls.listCommits({
-            owner: github.context.repo.owner,
-            repo: github.context.repo.repo,
-            pull_number: prNumber
-        });
-        return prCommits
-    }
-
-    async listLabelsOnPR(prNumber) {
-        const { data: prLabels } = await this.octokit.rest.issues.listLabelsOnIssue({
-            owner: github.context.repo.owner,
-            repo: github.context.repo.repo,
-            issue_number: prNumber
-        });
-        return prLabels
-    }
-}
-;// CONCATENATED MODULE: ./index.js
-
-
-const index_core = __nccwpck_require__(2186);
-const yaml = __nccwpck_require__(1917);
-
-async function run() {
-  const myToken = index_core.getInput('myToken');
-  // get octokit
-  const github = new GitHubProvider(myToken)
-  const configContent = await github.getConfigContent()
-
-  const prCreator = index_core.getInput('prCreator').toLowerCase();
-  const prNumber = index_core.getInput('prNumber');
-  const contents = yaml.load(configContent);
-  const requesters = contents["requesters"];
-
-  for (const [privileged_requester_username, privileged_requester_config] of Object.entries(requesters)) {
-    // console.log(privileged_requester_username);
-    // If privileged_requester_username is not the creator of the PR, move on
-    // If privileged_requester_username is the creator of the PR, check the remaining config
-    console.log(`PR creator is ${prCreator}. Testing against ${privileged_requester_username}`)
-    if (prCreator !== privileged_requester_username) {
-      continue;
-    }
-
-    console.log(`Privileged requester ${privileged_requester_username} found. Checking PR criteria against the privileged requester configuration.`);
-    // Check all commits of the PR to verify that they are all from the privileged requester, otherwise Fail? or at least, return
-    const prCommits = await github.listPRCommits(prNumber)
-
-    for (const [, commit] of Object.entries(prCommits)) {
-      let commitAuthor = commit.author.login.toLowerCase();
-
-      if (commitAuthor !== privileged_requester_username) {
-        console.log(`Unexpected commit author found by ${commitAuthor}! Commits should be authored by ${privileged_requester_username} I will not proceed with the privileged reviewer process.`);
-        return 0;
-      }
-    }
-
-    // Check labels of the PR to make sure that they match the privileged_requester_config
-
-    const prLabels = await github.listLabelsOnPR(prNumber)
-
-    const prLabelArray = [];
-
-    for (const [, prLabel] of Object.entries(prLabels)) {
-      let prLabelName = prLabel.name;
-      prLabelArray.push(prLabelName);
-    }
-
-    let differences = prLabelArray.filter(x => !privileged_requester_config.labels.includes(x));
-    if (differences.length !== 0) {
-      console.log(`Invalid label(s) found: ${differences}. I will not proceed with the privileged reviewer process.`);
-      return 0;
-    }
-
-    // If we've gotten this far, the commits are all from the privileged requestor and the labels are correct
-    // We can now approve the PR
-    console.log("Approving the PR for a privileged reviewer.")
-    await github.createReview(prNumber, "APPROVE")
-    console.log("PR approved, all set!")
-  }
-}
-
-run();
-
-})();
-
-module.exports = __webpack_exports__;
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module used 'module' so it can't be inlined
+/******/ 	var __webpack_exports__ = __nccwpck_require__(2932);
+/******/ 	module.exports = __webpack_exports__;
+/******/ 	
 /******/ })()
 ;
 //# sourceMappingURL=index.js.map

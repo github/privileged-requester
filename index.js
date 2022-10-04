@@ -1,45 +1,30 @@
 import {GitHubProvider} from "./modules/github-provider";
+import {PullRequest} from "./modules/pull-request";
+import {PrivilegedRequester} from "./modules/privileged-requester";
 
-const core = require('@actions/core');
-const yaml = require('js-yaml');
+class Runner {
+  constructor(pullRequest, privilegedRequesters) {
+    this.pullRequest = pullRequest
+    this.privilegedRequesters = privilegedRequesters
+  }
 
-async function run() {
-  const myToken = core.getInput('myToken');
-  // get octokit
-  const github = new GitHubProvider(myToken)
-  const configContent = await github.getConfigContent()
 
-  const prCreator = core.getInput('prCreator').toLowerCase();
-  const prNumber = core.getInput('prNumber');
-  const contents = yaml.load(configContent);
-  const requesters = contents["requesters"];
-
-  for (const [privileged_requester_username, privileged_requester_config] of Object.entries(requesters)) {
-    // console.log(privileged_requester_username);
-    // If privileged_requester_username is not the creator of the PR, move on
-    // If privileged_requester_username is the creator of the PR, check the remaining config
-    console.log(`PR creator is ${prCreator}. Testing against ${privileged_requester_username}`)
-    if (prCreator !== privileged_requester_username) {
-      continue;
-    }
-
-    console.log(`Privileged requester ${privileged_requester_username} found. Checking PR criteria against the privileged requester configuration.`);
-    // Check all commits of the PR to verify that they are all from the privileged requester, otherwise Fail? or at least, return
-    const prCommits = await github.listPRCommits(prNumber)
-
-    for (const [, commit] of Object.entries(prCommits)) {
+  async processCommits(privileged_requester_username) {
+    // Check all commits of the PR to verify that they are all from the privileged requester, otherwise return from the check
+    for (const [, commit] of Object.entries(this.pullRequest.listCommits())) {
       let commitAuthor = commit.author.login.toLowerCase();
 
       if (commitAuthor !== privileged_requester_username) {
         console.log(`Unexpected commit author found by ${commitAuthor}! Commits should be authored by ${privileged_requester_username} I will not proceed with the privileged reviewer process.`);
-        return 0;
+        return false;
       }
     }
+    return true;
+  }
 
-    // Check labels of the PR to make sure that they match the privileged_requester_config
-
-    const prLabels = await github.listLabelsOnPR(prNumber)
-
+  async processLabels(privileged_requester_config) {
+    // Check labels of the PR to make sure that they match the privileged_requester_config, otherwise return from the check
+    const prLabels = this.pullRequest.listLabels()
     const prLabelArray = [];
 
     for (const [, prLabel] of Object.entries(prLabels)) {
@@ -50,15 +35,51 @@ async function run() {
     let differences = prLabelArray.filter(x => !privileged_requester_config.labels.includes(x));
     if (differences.length !== 0) {
       console.log(`Invalid label(s) found: ${differences}. I will not proceed with the privileged reviewer process.`);
+      return false;
+    }
+    return true;
+  }
+
+  async run() {
+    const requesters = await this.privilegedRequesters.getRequesters()
+    for (const [privileged_requester_username, privileged_requester_config] of Object.entries(requesters)) {
+      // console.log(privileged_requester_username);
+      // If privileged_requester_username is not the creator of the PR, move on
+      // If privileged_requester_username is the creator of the PR, check the remaining config
+      console.log(`PR creator is ${this.pullRequest.prCreator}. Testing against ${privileged_requester_username}`)
+      if (this.pullRequest.prCreator !== privileged_requester_username) {
+        continue;
+      }
+      await this.processPrivilegedReviewer(privileged_requester_username, privileged_requester_config)
+    }
+  }
+
+  async processPrivilegedReviewer(privileged_requester_username, privileged_requester_config) {
+
+    console.log(`Privileged requester ${privileged_requester_username} found. Checking PR criteria against the privileged requester configuration.`);
+
+    let commits = await this.processCommits(privileged_requester_username)
+    if (commits === false) {
+      return 0;
+    }
+
+    let labels = await this.processLabels(privileged_requester_config)
+    if (labels === false) {
       return 0;
     }
 
     // If we've gotten this far, the commits are all from the privileged requestor and the labels are correct
     // We can now approve the PR
     console.log("Approving the PR for a privileged reviewer.")
-    await github.createReview(prNumber, "APPROVE")
+    await this.pullRequest.approve()
     console.log("PR approved, all set!")
   }
 }
 
-run();
+const core = require('@actions/core');
+const myToken = core.getInput('myToken');
+const provider = new GitHubProvider(myToken);
+const pullRequest = new PullRequest(provider);
+const privilegedRequester = new PrivilegedRequester(provider);
+const runner = new Runner(pullRequest, privilegedRequester)
+await runner.run();
