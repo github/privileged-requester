@@ -1,5 +1,6 @@
 {
   "pull_request": {
+    "number": 10,
     "user": {
       "login": "DanHoerst"
     },
@@ -8,6 +9,13 @@
     },
     "base": {
       "ref": "sample-base-ref"
-    }
+    },
+    "body": "Please pull these awesome changes in!",
+    "labels": [
+      {
+        "name": "privileged-requester",
+        "description": "Privileged Requester"
+      }
+    ]
   }
 }
