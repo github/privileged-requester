@@ -7,13 +7,13 @@ on:
       - 'releases/*'
 
 jobs:
-  # unit tests
-  units:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - run: npm ci
-    - run: npm test
+#  # unit tests
+#  units:
+#    runs-on: ubuntu-latest
+#    steps:
+#    - uses: actions/checkout@v3
+#    - run: npm ci
+#    - run: npm test
 
   # test action works running from the graph
   test:
@@ -22,4 +22,4 @@ jobs:
     - uses: actions/checkout@v3
     - uses: ./
       with:
-        milliseconds: 1000
+        myToken: ${{ secrets.GITHUB_TOKEN }}
