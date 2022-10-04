@@ -23,3 +23,6 @@ jobs:
     - uses: ./
       with:
         myToken: ${{ secrets.GITHUB_TOKEN }}
+        owner: DanHoerst
+        repo: privileged-requester
+        path: config/privileged-requester.yaml
