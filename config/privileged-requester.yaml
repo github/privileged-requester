@@ -3,7 +3,7 @@ requesters:
   danhoerst:
     labels:
       - testing
-  dependabot:
+  dependabot[bot]:
     labels:
       - dependencies
       - github_actions
