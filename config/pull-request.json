@@ -1,0 +1,13 @@
+{
+  "pull_request": {
+    "user": {
+      "login": "DanHoerst"
+    },
+    "head": {
+      "ref": "sample-head-ref"
+    },
+    "base": {
+      "ref": "sample-base-ref"
+    }
+  }
+}
