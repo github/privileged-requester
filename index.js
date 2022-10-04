@@ -1,17 +1,13 @@
-const github = require('@actions/github');
+import {GitHubProvider} from "./modules/github-provider";
+
 const core = require('@actions/core');
 const yaml = require('js-yaml');
 
 async function run() {
   const myToken = core.getInput('myToken');
-  const octokit = github.getOctokit(myToken);
-
-  const { data: configContent } = await octokit.rest.repos.getContent({
-    owner: github.context.repo.owner,
-    repo: github.context.repo.repo,
-    path: core.getInput('path'),
-    mediaType: { format: "raw" }
-  });
+  // get octokit
+  const github = new GitHubProvider(myToken)
+  const configContent = await github.getConfigContent()
 
   const prCreator = core.getInput('prCreator').toLowerCase();
   const prNumber = core.getInput('prNumber');
@@ -29,11 +25,8 @@ async function run() {
 
     console.log(`Privileged requester ${privileged_requester_username} found. Checking PR criteria against the privileged requester configuration.`);
     // Check all commits of the PR to verify that they are all from the privileged requester, otherwise Fail? or at least, return
-    const { data: prCommits } = await octokit.rest.pulls.listCommits({
-      owner: github.context.repo.owner,
-      repo: github.context.repo.repo,
-      pull_number: prNumber
-    });
+    const prCommits = await github.listPRCommits(prNumber)
+
     for (const [, commit] of Object.entries(prCommits)) {
       let commitAuthor = commit.author.login.toLowerCase();
 
@@ -44,11 +37,8 @@ async function run() {
     }
 
     // Check labels of the PR to make sure that they match the privileged_requester_config
-    const { data: prLabels } = await octokit.rest.issues.listLabelsOnIssue({
-      owner: github.context.repo.owner,
-      repo: github.context.repo.repo,
-      issue_number: prNumber
-    });
+
+    const prLabels = await github.listLabelsOnPR(prNumber)
 
     const prLabelArray = [];
 
@@ -66,12 +56,7 @@ async function run() {
     // If we've gotten this far, the commits are all from the privileged requestor and the labels are correct
     // We can now approve the PR
     console.log("Approving the PR for a privileged reviewer.")
-    await octokit.rest.pulls.createReview({
-      owner: github.context.repo.owner,
-      repo: github.context.repo.repo,
-      pull_number: prNumber,
-      event: "APPROVE"
-    });
+    await github.createReview(prNumber, "APPROVE")
     console.log("PR approved, all set!")
   }
 }

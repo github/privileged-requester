@@ -13323,31 +13323,92 @@ module.exports = require("zlib");
 /******/ 	}
 /******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__nccwpck_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/compat */
 /******/ 	
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
 (() => {
+"use strict";
+// ESM COMPAT FLAG
+__nccwpck_require__.r(__webpack_exports__);
+
+;// CONCATENATED MODULE: ./modules/github-provider.js
 const github = __nccwpck_require__(5438);
 const core = __nccwpck_require__(2186);
+
+
+
+class GitHubProvider {
+    constructor(token) {
+        this.token = token;
+        this.octokit = github.getOctokit(token);
+    }
+
+    async createReview(prNumber, reviewEvent) {
+        await this.octokit.rest.pulls.createReview({
+            owner: github.context.repo.owner,
+            repo: github.context.repo.repo,
+            pull_number: prNumber,
+            event: reviewEvent
+        });
+    }
+
+    async getConfigContent() {
+        const { data: configContent } = await this.octokit.rest.repos.getContent({
+            owner: github.context.repo.owner,
+            repo: github.context.repo.repo,
+            path: core.getInput('path'),
+            mediaType: { format: "raw" }
+        });
+        return configContent
+    }
+
+    async listPRCommits(prNumber) {
+        const { data: prCommits } = await this.octokit.rest.pulls.listCommits({
+            owner: github.context.repo.owner,
+            repo: github.context.repo.repo,
+            pull_number: prNumber
+        });
+        return prCommits
+    }
+
+    async listLabelsOnPR(prNumber) {
+        const { data: prLabels } = await this.octokit.rest.issues.listLabelsOnIssue({
+            owner: github.context.repo.owner,
+            repo: github.context.repo.repo,
+            issue_number: prNumber
+        });
+        return prLabels
+    }
+}
+;// CONCATENATED MODULE: ./index.js
+
+
+const index_core = __nccwpck_require__(2186);
 const yaml = __nccwpck_require__(1917);
 
 async function run() {
-  const myToken = core.getInput('myToken');
-  const octokit = github.getOctokit(myToken);
+  const myToken = index_core.getInput('myToken');
+  // get octokit
+  const github = new GitHubProvider(myToken)
+  const configContent = await github.getConfigContent()
 
-  const { data: configContent } = await octokit.rest.repos.getContent({
-    owner: github.context.repo.owner,
-    repo: github.context.repo.repo,
-    path: core.getInput('path'),
-    mediaType: { format: "raw" }
-  });
-
-  const prCreator = core.getInput('prCreator').toLowerCase();
-  const prNumber = core.getInput('prNumber');
+  const prCreator = index_core.getInput('prCreator').toLowerCase();
+  const prNumber = index_core.getInput('prNumber');
   const contents = yaml.load(configContent);
   const requesters = contents["requesters"];
 
@@ -13362,11 +13423,8 @@ async function run() {
 
     console.log(`Privileged requester ${privileged_requester_username} found. Checking PR criteria against the privileged requester configuration.`);
     // Check all commits of the PR to verify that they are all from the privileged requester, otherwise Fail? or at least, return
-    const { data: prCommits } = await octokit.rest.pulls.listCommits({
-      owner: github.context.repo.owner,
-      repo: github.context.repo.repo,
-      pull_number: prNumber
-    });
+    const prCommits = await github.listPRCommits(prNumber)
+
     for (const [, commit] of Object.entries(prCommits)) {
       let commitAuthor = commit.author.login.toLowerCase();
 
@@ -13377,11 +13435,8 @@ async function run() {
     }
 
     // Check labels of the PR to make sure that they match the privileged_requester_config
-    const { data: prLabels } = await octokit.rest.issues.listLabelsOnIssue({
-      owner: github.context.repo.owner,
-      repo: github.context.repo.repo,
-      issue_number: prNumber
-    });
+
+    const prLabels = await github.listLabelsOnPR(prNumber)
 
     const prLabelArray = [];
 
@@ -13399,12 +13454,7 @@ async function run() {
     // If we've gotten this far, the commits are all from the privileged requestor and the labels are correct
     // We can now approve the PR
     console.log("Approving the PR for a privileged reviewer.")
-    await octokit.rest.pulls.createReview({
-      owner: github.context.repo.owner,
-      repo: github.context.repo.repo,
-      pull_number: prNumber,
-      event: "APPROVE"
-    });
+    await github.createReview(prNumber, "APPROVE")
     console.log("PR approved, all set!")
   }
 }
