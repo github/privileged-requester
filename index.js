@@ -3,8 +3,8 @@ const core = require('@actions/core');
 const yaml = require('js-yaml');
 
 async function run() {
-  const repoToken = core.getInput('repoToken');
-  const octokit = github.getOctokit(repoToken);
+  const myToken = core.getInput('myToken');
+  const octokit = github.getOctokit(myToken);
 
   const { data: configContent } = await octokit.rest.repos.getContent({
     owner: github.context.repo.owner,
