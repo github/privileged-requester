@@ -1,7 +1,7 @@
 name: 'Privileged Requester'
 description: 'Checks a PR against configurable criteria to determine whether or not the PR should be automatically approved'
 inputs:
-  repoToken:
+  myToken:
     description: 'Repo scoped token'
     required: true
   path:
