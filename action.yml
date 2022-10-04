@@ -13,6 +13,9 @@ inputs:
   path:
     description: 'Path where the privileged requester configuration can be found'
     required: true
+  prCreator:
+    description: 'The creator of the PR for this pull request event'
+    required: true
 outputs:
   time: # output will be available to future steps
     description: 'The current time after waiting'
