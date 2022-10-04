@@ -23,6 +23,8 @@ async function run() {
     // If privileged_requester_username is the creator of the PR, check the remaining config
     if (prCreator === privileged_requester_username) {
       console.log("Privileged requester found. Checking PR criteria against the privileged requester configuration.");
+      // Check all commits of the PR to verify that they are all from the privileged requester, otherwise Fail? or at least, return
+      // Check labels of the PR to make sure that they match the privileged_requester_config
     } else {
       console.log("Not privileged requester!");
     }
