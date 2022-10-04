@@ -4,17 +4,14 @@ inputs:
   repoToken:
     description: 'Repo scoped token'
     required: true
-  owner:
-    description: 'Owner of the privileged requester configuration repository'
-    required: true
-  repo:
-    description: 'Repo where the privileged requester configuration lives'
-    required: true
   path:
     description: 'Path where the privileged requester configuration can be found'
     required: true
   prCreator:
     description: 'The creator of the PR for this pull request event'
+    required: true
+  prNumber:
+    description: 'The number of the PR for this pull request event'
     required: true
 outputs:
   time: # output will be available to future steps
