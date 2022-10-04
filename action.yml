@@ -1,10 +1,18 @@
-name: 'Wait'
-description: 'Wait a designated number of milliseconds'
+name: 'Privileged Requester'
+description: 'Checks a PR against configurable criteria to determine whether or not the PR should be automatically approved'
 inputs:
-  milliseconds:  # id of input
-    description: 'number of milliseconds to wait'
+  repoToken:
+    description: 'Repo scoped token'
     required: true
-    default: '1000'
+  owner:
+    description: 'Owner of the privileged requester configuration repository'
+    required: true
+  repo:
+    description: 'Repo where the privileged requester configuration lives'
+    required: true
+  path:
+    description: 'Path where the privileged requester configuration can be found'
+    required: true
 outputs:
   time: # output will be available to future steps
     description: 'The current time after waiting'
