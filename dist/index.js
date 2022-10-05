@@ -13759,7 +13759,11 @@ class PullRequest {
   }
 
   async approve() {
-    await this.github.createReview(this.prNumber, "APPROVE");
+    try {
+      await this.github.createReview(this.prNumber, "APPROVE");
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   async listCommits() {
