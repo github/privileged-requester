@@ -1,7 +1,7 @@
-import {GitHubProvider} from "./modules/github-provider";
-import {PrivilegedRequester} from "./modules/privileged-requester";
-import {PullRequest} from "./modules/pull-request";
-import {Runner} from "./modules/runner";
+import {GitHubProvider} from "./src/github-provider";
+import {PrivilegedRequester} from "./src/privileged-requester";
+import {PullRequest} from "./src/pull-request";
+import {Runner} from "./src/runner";
 
 const core = require('@actions/core');
 const myToken = core.getInput('myToken');
