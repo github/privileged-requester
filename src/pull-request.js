@@ -14,7 +14,7 @@ class PullRequest {
     try {
       await this.github.createReview(this.prNumber, "APPROVE");
     } catch (err) {
-      console.log(err.response.data.message);
+      console.log(err.message);
     }
   }
 
