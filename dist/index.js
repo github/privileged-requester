@@ -13268,7 +13268,6 @@ class PrivilegedRequester {
     async getRequesters() {
         if (this.requesters === false) {
             const config = await this.github.getConfigContent();
-            console.log(config)
             this.configContents = yaml.load(config);
             this.requesters = this.configContents["requesters"];
         }
