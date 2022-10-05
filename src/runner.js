@@ -21,6 +21,13 @@ class Runner {
     return true;
   }
 
+  labelsEqual(prLabels, configuredLabels) {
+    return Array.isArray(prLabels) &&
+        Array.isArray(configuredLabels) &&
+        prLabels.length === configuredLabels.length &&
+        prLabels.every((val, index) => val === configuredLabels[index]);
+  }
+
   async processLabels(privileged_requester_config) {
     // Check labels of the PR to make sure that they match the privileged_requester_config, otherwise return from the check
     const prLabels = await this.pullRequest.listLabels();
@@ -34,12 +41,9 @@ class Runner {
     console.log(
       `Comparing the PR Labels: ${prLabelArray} with the privileged requester labels: ${privileged_requester_config.labels}`
     );
-    let differences = prLabelArray.filter(
-      (x) => !privileged_requester_config.labels.includes(x)
-    );
-    if (differences.length !== 0) {
+    if (this.labelsEqual(prLabelArray, privileged_requester_config.labels) === false) {
       console.log(
-        `Invalid label(s) found: ${differences}. I will not proceed with the privileged reviewer process.`
+        `Invalid label(s) found. I will not proceed with the privileged reviewer process.`
       );
       return false;
     }
