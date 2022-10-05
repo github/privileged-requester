@@ -20,6 +20,7 @@ const core = __nccwpck_require__(2186);
 let myToken = core.getInput("myToken");
 const robotUserToken = core.getInput("robotUserToken");
 if (robotUserToken !== "") {
+    console.log("Robot User configured. I will use that PAT instead.")
     myToken = robotUserToken;
 }
 const provider = new _src_github_provider__WEBPACK_IMPORTED_MODULE_0__/* .GitHubProvider */ .C(myToken);
