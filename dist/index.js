@@ -17,11 +17,11 @@ __nccwpck_require__.r(__webpack_exports__);
 
 
 const core = __nccwpck_require__(2186);
-const myToken = core.getInput('myToken');
+const myToken = core.getInput("myToken");
 const provider = new _src_github_provider__WEBPACK_IMPORTED_MODULE_0__/* .GitHubProvider */ .C(myToken);
 const pullRequest = new _src_pull_request__WEBPACK_IMPORTED_MODULE_2__/* .PullRequest */ .i(provider);
 const privilegedRequester = new _src_privileged_requester__WEBPACK_IMPORTED_MODULE_1__/* .PrivilegedRequester */ .b(provider);
-const runner = new _src_runner__WEBPACK_IMPORTED_MODULE_3__/* .Runner */ .R(pullRequest, privilegedRequester)
+const runner = new _src_runner__WEBPACK_IMPORTED_MODULE_3__/* .Runner */ .R(pullRequest, privilegedRequester);
 await runner.run();
 
 __webpack_handle_async_dependencies__();
@@ -13203,48 +13203,51 @@ const core = __nccwpck_require__(2186);
 
 
 class GitHubProvider {
-    constructor(token) {
-        this.token = token;
-        this.octokit = github.getOctokit(token);
-    }
+  constructor(token) {
+    this.token = token;
+    this.octokit = github.getOctokit(token);
+  }
 
-    async createReview(prNumber, reviewEvent) {
-        await this.octokit.rest.pulls.createReview({
-            owner: github.context.repo.owner,
-            repo: github.context.repo.repo,
-            pull_number: prNumber,
-            event: reviewEvent
-        });
-    }
+  async createReview(prNumber, reviewEvent) {
+    await this.octokit.rest.pulls.createReview({
+      owner: github.context.repo.owner,
+      repo: github.context.repo.repo,
+      pull_number: prNumber,
+      event: reviewEvent,
+    });
+  }
 
-    async getConfigContent() {
-        const { data: configContent } = await this.octokit.rest.repos.getContent({
-            owner: github.context.repo.owner,
-            repo: github.context.repo.repo,
-            path: core.getInput('path'),
-            mediaType: { format: "raw" }
-        });
-        return configContent
-    }
+  async getConfigContent() {
+    const { data: configContent } = await this.octokit.rest.repos.getContent({
+      owner: github.context.repo.owner,
+      repo: github.context.repo.repo,
+      path: core.getInput("path"),
+      mediaType: { format: "raw" },
+    });
+    return configContent;
+  }
 
-    async listPRCommits(prNumber) {
-        const { data: prCommits } = await this.octokit.rest.pulls.listCommits({
-            owner: github.context.repo.owner,
-            repo: github.context.repo.repo,
-            pull_number: prNumber
-        });
-        return prCommits
-    }
+  async listPRCommits(prNumber) {
+    const { data: prCommits } = await this.octokit.rest.pulls.listCommits({
+      owner: github.context.repo.owner,
+      repo: github.context.repo.repo,
+      pull_number: prNumber,
+    });
+    return prCommits;
+  }
 
-    async listLabelsOnPR(prNumber) {
-        const { data: prLabels } = await this.octokit.rest.issues.listLabelsOnIssue({
-            owner: github.context.repo.owner,
-            repo: github.context.repo.repo,
-            issue_number: prNumber
-        });
-        return prLabels
-    }
+  async listLabelsOnPR(prNumber) {
+    const { data: prLabels } = await this.octokit.rest.issues.listLabelsOnIssue(
+      {
+        owner: github.context.repo.owner,
+        repo: github.context.repo.repo,
+        issue_number: prNumber,
+      }
+    );
+    return prLabels;
+  }
 }
+
 
 /***/ }),
 
@@ -13260,19 +13263,19 @@ class GitHubProvider {
 const yaml = __nccwpck_require__(1917);
 
 class PrivilegedRequester {
-    constructor(provider) {
-        this.github = provider;
-        this.requesters = false;
-    }
+  constructor(provider) {
+    this.github = provider;
+    this.requesters = false;
+  }
 
-    async getRequesters() {
-        if (this.requesters === false) {
-            const config = await this.github.getConfigContent();
-            this.configContents = yaml.load(config);
-            this.requesters = this.configContents["requesters"];
-        }
-        return this.requesters
+  async getRequesters() {
+    if (this.requesters === false) {
+      const config = await this.github.getConfigContent();
+      this.configContents = yaml.load(config);
+      this.requesters = this.configContents["requesters"];
     }
+    return this.requesters;
+  }
 }
 
 
@@ -13288,33 +13291,34 @@ class PrivilegedRequester {
 
 
 class PullRequest {
-    constructor(provider) {
-        const core = __nccwpck_require__(2186);
-        this.github = provider;
-        this.prCreator = core.getInput('prCreator').toLowerCase();
-        this.prNumber = core.getInput('prNumber');
-        this.prCommits = false
-        this.prLabels = false
-    }
+  constructor(provider) {
+    const core = __nccwpck_require__(2186);
+    this.github = provider;
+    this.prCreator = core.getInput("prCreator").toLowerCase();
+    this.prNumber = core.getInput("prNumber");
+    this.prCommits = false;
+    this.prLabels = false;
+  }
 
-    async approve() {
-        await this.github.createReview(this.prNumber, "APPROVE")
-    }
+  async approve() {
+    await this.github.createReview(this.prNumber, "APPROVE");
+  }
 
-    async listCommits() {
-        if (this.prCommits === false) {
-            this.prCommits = await this.github.listPRCommits(this.prNumber)
-        }
-        return this.prCommits
+  async listCommits() {
+    if (this.prCommits === false) {
+      this.prCommits = await this.github.listPRCommits(this.prNumber);
     }
+    return this.prCommits;
+  }
 
-    async listLabels() {
-        if (this.prLabels === false) {
-            this.prLabels = await this.github.listLabelsOnPR(this.prNumber)
-        }
-        return this.prLabels
+  async listLabels() {
+    if (this.prLabels === false) {
+      this.prLabels = await this.github.listLabelsOnPR(this.prNumber);
     }
+    return this.prLabels;
+  }
 }
+
 
 /***/ }),
 
@@ -13328,79 +13332,97 @@ class PullRequest {
 
 
 class Runner {
-    constructor(pullRequest, privilegedRequesters) {
-        this.pullRequest = pullRequest
-        this.privilegedRequesters = privilegedRequesters
+  constructor(pullRequest, privilegedRequesters) {
+    this.pullRequest = pullRequest;
+    this.privilegedRequesters = privilegedRequesters;
+  }
+
+  async processCommits(privileged_requester_username) {
+    // Check all commits of the PR to verify that they are all from the privileged requester, otherwise return from the check
+    for (const [, commit] of Object.entries(this.pullRequest.listCommits())) {
+      let commitAuthor = commit.author.login.toLowerCase();
+
+      if (commitAuthor !== privileged_requester_username) {
+        console.log(
+          `Unexpected commit author found by ${commitAuthor}! Commits should be authored by ${privileged_requester_username} I will not proceed with the privileged reviewer process.`
+        );
+        return false;
+      }
+    }
+    return true;
+  }
+
+  async processLabels(privileged_requester_config) {
+    // Check labels of the PR to make sure that they match the privileged_requester_config, otherwise return from the check
+    const prLabels = await this.pullRequest.listLabels();
+    const prLabelArray = [];
+
+    for (const [, prLabel] of Object.entries(prLabels)) {
+      let prLabelName = prLabel.name;
+      prLabelArray.push(prLabelName);
     }
 
+    console.log(
+      `Comparing the PR Labels: ${prLabelArray} with the privileged requester labels: ${privileged_requester_config.labels}`
+    );
+    let differences = prLabelArray.filter(
+      (x) => !privileged_requester_config.labels.includes(x)
+    );
+    if (differences.length !== 0) {
+      console.log(
+        `Invalid label(s) found: ${differences}. I will not proceed with the privileged reviewer process.`
+      );
+      return false;
+    }
+    return true;
+  }
 
-    async processCommits(privileged_requester_username) {
-        // Check all commits of the PR to verify that they are all from the privileged requester, otherwise return from the check
-        for (const [, commit] of Object.entries(this.pullRequest.listCommits())) {
-            let commitAuthor = commit.author.login.toLowerCase();
+  async run() {
+    const requesters = await this.privilegedRequesters.getRequesters();
+    for (const [
+      privileged_requester_username,
+      privileged_requester_config,
+    ] of Object.entries(requesters)) {
+      // console.log(privileged_requester_username);
+      // If privileged_requester_username is not the creator of the PR, move on
+      // If privileged_requester_username is the creator of the PR, check the remaining config
+      console.log(
+        `PR creator is ${this.pullRequest.prCreator}. Testing against ${privileged_requester_username}`
+      );
+      if (this.pullRequest.prCreator !== privileged_requester_username) {
+        continue;
+      }
+      await this.processPrivilegedReviewer(
+        privileged_requester_username,
+        privileged_requester_config
+      );
+    }
+  }
 
-            if (commitAuthor !== privileged_requester_username) {
-                console.log(`Unexpected commit author found by ${commitAuthor}! Commits should be authored by ${privileged_requester_username} I will not proceed with the privileged reviewer process.`);
-                return false;
-            }
-        }
-        return true;
+  async processPrivilegedReviewer(
+    privileged_requester_username,
+    privileged_requester_config
+  ) {
+    console.log(
+      `Privileged requester ${privileged_requester_username} found. Checking PR criteria against the privileged requester configuration.`
+    );
+
+    let commits = await this.processCommits(privileged_requester_username);
+    if (commits === false) {
+      return 0;
     }
 
-    async processLabels(privileged_requester_config) {
-        // Check labels of the PR to make sure that they match the privileged_requester_config, otherwise return from the check
-        const prLabels = await this.pullRequest.listLabels()
-        const prLabelArray = [];
-        console.log(prLabels)
-
-        for (const [, prLabel] of Object.entries(prLabels)) {
-            let prLabelName = prLabel.name;
-            prLabelArray.push(prLabelName);
-        }
-
-        console.log(`Comparing the PR Labels: ${prLabelArray} with the privileged requester labels: ${privileged_requester_config.labels}`)
-        let differences = prLabelArray.filter(x => !privileged_requester_config.labels.includes(x));
-        if (differences.length !== 0) {
-            console.log(`Invalid label(s) found: ${differences}. I will not proceed with the privileged reviewer process.`);
-            return false;
-        }
-        return true;
+    let labels = await this.processLabels(privileged_requester_config);
+    if (labels === false) {
+      return 0;
     }
 
-    async run() {
-        const requesters = await this.privilegedRequesters.getRequesters()
-        for (const [privileged_requester_username, privileged_requester_config] of Object.entries(requesters)) {
-            // console.log(privileged_requester_username);
-            // If privileged_requester_username is not the creator of the PR, move on
-            // If privileged_requester_username is the creator of the PR, check the remaining config
-            console.log(`PR creator is ${this.pullRequest.prCreator}. Testing against ${privileged_requester_username}`)
-            if (this.pullRequest.prCreator !== privileged_requester_username) {
-                continue;
-            }
-            await this.processPrivilegedReviewer(privileged_requester_username, privileged_requester_config)
-        }
-    }
-
-    async processPrivilegedReviewer(privileged_requester_username, privileged_requester_config) {
-
-        console.log(`Privileged requester ${privileged_requester_username} found. Checking PR criteria against the privileged requester configuration.`);
-
-        let commits = await this.processCommits(privileged_requester_username)
-        if (commits === false) {
-            return 0;
-        }
-
-        let labels = await this.processLabels(privileged_requester_config)
-        if (labels === false) {
-            return 0;
-        }
-
-        // If we've gotten this far, the commits are all from the privileged requestor and the labels are correct
-        // We can now approve the PR
-        console.log("Approving the PR for a privileged reviewer.")
-        await this.pullRequest.approve()
-        console.log("PR approved, all set!")
-    }
+    // If we've gotten this far, the commits are all from the privileged requestor and the labels are correct
+    // We can now approve the PR
+    console.log("Approving the PR for a privileged reviewer.");
+    await this.pullRequest.approve();
+    console.log("PR approved, all set!");
+  }
 }
 
 

@@ -4,8 +4,10 @@
   "description": "GitHub Action which checks a PR against configurable criteria to determine whether or not the PR should be automatically approved",
   "main": "lib/index.js",
   "scripts": {
+    "format": "prettier --write '**/*.js'",
+    "format-check": "prettier --check '**/*.js'",
     "lint": "eslint .",
-    "package": "NODE_OPTIONS=--openssl-legacy-provider ncc build src/main.js -o dist --source-map --license licenses.txt",
+    "package": "ncc build index.js -o dist --source-map --license licenses.txt",
     "prepare": "ncc build index.js -o dist --source-map --license licenses.txt",
     "test": "jest",
     "bundle": "npm run format && npm run package",
@@ -35,6 +37,7 @@
     "@babel/plugin-transform-modules-commonjs": "^7.18.6",
     "@vercel/ncc": "^0.31.1",
     "eslint": "^8.0.0",
-    "jest": "^27.5.1"
+    "jest": "^27.5.1",
+    "prettier": "^2.7.1"
   }
 }
