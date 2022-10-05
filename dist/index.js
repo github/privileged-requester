@@ -13349,14 +13349,16 @@ class Runner {
 
     async processLabels(privileged_requester_config) {
         // Check labels of the PR to make sure that they match the privileged_requester_config, otherwise return from the check
-        const prLabels = this.pullRequest.listLabels()
+        const prLabels = await this.pullRequest.listLabels()
         const prLabelArray = [];
+        console.log(prLabels)
 
         for (const [, prLabel] of Object.entries(prLabels)) {
             let prLabelName = prLabel.name;
             prLabelArray.push(prLabelName);
         }
 
+        console.log(`Comparing the PR Labels: ${prLabelArray} with the privileged requester labels: ${privileged_requester_config.labels}`)
         let differences = prLabelArray.filter(x => !privileged_requester_config.labels.includes(x));
         if (differences.length !== 0) {
             console.log(`Invalid label(s) found: ${differences}. I will not proceed with the privileged reviewer process.`);
