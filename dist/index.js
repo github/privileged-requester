@@ -17,7 +17,11 @@ __nccwpck_require__.r(__webpack_exports__);
 
 
 const core = __nccwpck_require__(2186);
-const myToken = core.getInput("myToken");
+let myToken = core.getInput("myToken");
+const robotUserToken = core.getInput("robotUserToken");
+if (robotUserToken !== "") {
+    myToken = robotUserToken;
+}
 const provider = new _src_github_provider__WEBPACK_IMPORTED_MODULE_0__/* .GitHubProvider */ .C(myToken);
 const pullRequest = new _src_pull_request__WEBPACK_IMPORTED_MODULE_2__/* .PullRequest */ .i(provider);
 const privilegedRequester = new _src_privileged_requester__WEBPACK_IMPORTED_MODULE_1__/* .PrivilegedRequester */ .b(provider);
