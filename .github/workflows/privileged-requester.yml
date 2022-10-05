@@ -13,6 +13,7 @@ jobs:
     - uses: ./
       with:
         myToken: ${{ secrets.GITHUB_TOKEN }}
+        robotUserToken: ${{ secrets.REPO_GITHUB_TOKEN }}
         path: config/privileged-requester.yaml
         prCreator: ${{ github.event.pull_request.user.login }}
         prNumber: ${{ github.event.pull_request.number }}
