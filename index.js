@@ -4,7 +4,12 @@ import { PullRequest } from "./src/pull-request";
 import { Runner } from "./src/runner";
 
 const core = require("@actions/core");
-const myToken = core.getInput("myToken");
+let myToken = core.getInput("myToken");
+const robotUserToken = core.getInput("robotUserToken");
+if (robotUserToken !== "") {
+  console.log("Robot User configured. I will use that PAT instead.");
+  myToken = robotUserToken;
+}
 const provider = new GitHubProvider(myToken);
 const pullRequest = new PullRequest(provider);
 const privilegedRequester = new PrivilegedRequester(provider);
