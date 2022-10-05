@@ -4,6 +4,9 @@ inputs:
   myToken:
     description: 'Repo scoped token'
     required: true
+  robotUserToken:
+    description: 'An alternative robot user PAT to be used instead of the built-in Actions token'
+    required: false
   path:
     description: 'Path where the privileged requester configuration can be found'
     required: true
