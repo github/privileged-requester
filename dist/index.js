@@ -8,92 +8,20 @@ require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 __nccwpck_require__.a(module, async (__webpack_handle_async_dependencies__) => {
 __nccwpck_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_github_provider__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(5723);
-/* harmony import */ var _modules_pull_request__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(368);
-/* harmony import */ var _modules_privileged_requester__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(3854);
+/* harmony import */ var _modules_privileged_requester__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(3854);
+/* harmony import */ var _modules_pull_request__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(368);
+/* harmony import */ var _modules_runner__WEBPACK_IMPORTED_MODULE_3__ = __nccwpck_require__(1637);
 
 
 
 
-class Runner {
-  constructor(pullRequest, privilegedRequesters) {
-    this.pullRequest = pullRequest
-    this.privilegedRequesters = privilegedRequesters
-  }
-
-
-  async processCommits(privileged_requester_username) {
-    // Check all commits of the PR to verify that they are all from the privileged requester, otherwise return from the check
-    for (const [, commit] of Object.entries(this.pullRequest.listCommits())) {
-      let commitAuthor = commit.author.login.toLowerCase();
-
-      if (commitAuthor !== privileged_requester_username) {
-        console.log(`Unexpected commit author found by ${commitAuthor}! Commits should be authored by ${privileged_requester_username} I will not proceed with the privileged reviewer process.`);
-        return false;
-      }
-    }
-    return true;
-  }
-
-  async processLabels(privileged_requester_config) {
-    // Check labels of the PR to make sure that they match the privileged_requester_config, otherwise return from the check
-    const prLabels = this.pullRequest.listLabels()
-    const prLabelArray = [];
-
-    for (const [, prLabel] of Object.entries(prLabels)) {
-      let prLabelName = prLabel.name;
-      prLabelArray.push(prLabelName);
-    }
-
-    let differences = prLabelArray.filter(x => !privileged_requester_config.labels.includes(x));
-    if (differences.length !== 0) {
-      console.log(`Invalid label(s) found: ${differences}. I will not proceed with the privileged reviewer process.`);
-      return false;
-    }
-    return true;
-  }
-
-  async run() {
-    const requesters = await this.privilegedRequesters.getRequesters()
-    for (const [privileged_requester_username, privileged_requester_config] of Object.entries(requesters)) {
-      // console.log(privileged_requester_username);
-      // If privileged_requester_username is not the creator of the PR, move on
-      // If privileged_requester_username is the creator of the PR, check the remaining config
-      console.log(`PR creator is ${this.pullRequest.prCreator}. Testing against ${privileged_requester_username}`)
-      if (this.pullRequest.prCreator !== privileged_requester_username) {
-        continue;
-      }
-      await this.processPrivilegedReviewer(privileged_requester_username, privileged_requester_config)
-    }
-  }
-
-  async processPrivilegedReviewer(privileged_requester_username, privileged_requester_config) {
-
-    console.log(`Privileged requester ${privileged_requester_username} found. Checking PR criteria against the privileged requester configuration.`);
-
-    let commits = await this.processCommits(privileged_requester_username)
-    if (commits === false) {
-      return 0;
-    }
-
-    let labels = await this.processLabels(privileged_requester_config)
-    if (labels === false) {
-      return 0;
-    }
-
-    // If we've gotten this far, the commits are all from the privileged requestor and the labels are correct
-    // We can now approve the PR
-    console.log("Approving the PR for a privileged reviewer.")
-    await this.pullRequest.approve()
-    console.log("PR approved, all set!")
-  }
-}
 
 const core = __nccwpck_require__(2186);
 const myToken = core.getInput('myToken');
 const provider = new _modules_github_provider__WEBPACK_IMPORTED_MODULE_0__/* .GitHubProvider */ .C(myToken);
-const pullRequest = new _modules_pull_request__WEBPACK_IMPORTED_MODULE_1__/* .PullRequest */ .i(provider);
-const privilegedRequester = new _modules_privileged_requester__WEBPACK_IMPORTED_MODULE_2__/* .PrivilegedRequester */ .b(provider);
-const runner = new Runner(pullRequest, privilegedRequester)
+const pullRequest = new _modules_pull_request__WEBPACK_IMPORTED_MODULE_2__/* .PullRequest */ .i(provider);
+const privilegedRequester = new _modules_privileged_requester__WEBPACK_IMPORTED_MODULE_1__/* .PrivilegedRequester */ .b(provider);
+const runner = new _modules_runner__WEBPACK_IMPORTED_MODULE_3__/* .Runner */ .R(pullRequest, privilegedRequester)
 await runner.run();
 
 __webpack_handle_async_dependencies__();
@@ -196,10 +124,6 @@ class PrivilegedRequester {
 /* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
 /* harmony export */   "i": () => (/* binding */ PullRequest)
 /* harmony export */ });
-/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(2186);
-/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__nccwpck_require__.n(_actions_core__WEBPACK_IMPORTED_MODULE_0__);
-
-
 
 
 class PullRequest {
@@ -230,6 +154,92 @@ class PullRequest {
         return this.prLabels
     }
 }
+
+/***/ }),
+
+/***/ 1637:
+/***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
+
+"use strict";
+/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
+/* harmony export */   "R": () => (/* binding */ Runner)
+/* harmony export */ });
+
+
+class Runner {
+    constructor(pullRequest, privilegedRequesters) {
+        this.pullRequest = pullRequest
+        this.privilegedRequesters = privilegedRequesters
+    }
+
+
+    async processCommits(privileged_requester_username) {
+        // Check all commits of the PR to verify that they are all from the privileged requester, otherwise return from the check
+        for (const [, commit] of Object.entries(this.pullRequest.listCommits())) {
+            let commitAuthor = commit.author.login.toLowerCase();
+
+            if (commitAuthor !== privileged_requester_username) {
+                console.log(`Unexpected commit author found by ${commitAuthor}! Commits should be authored by ${privileged_requester_username} I will not proceed with the privileged reviewer process.`);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    async processLabels(privileged_requester_config) {
+        // Check labels of the PR to make sure that they match the privileged_requester_config, otherwise return from the check
+        const prLabels = this.pullRequest.listLabels()
+        const prLabelArray = [];
+
+        for (const [, prLabel] of Object.entries(prLabels)) {
+            let prLabelName = prLabel.name;
+            prLabelArray.push(prLabelName);
+        }
+
+        let differences = prLabelArray.filter(x => !privileged_requester_config.labels.includes(x));
+        if (differences.length !== 0) {
+            console.log(`Invalid label(s) found: ${differences}. I will not proceed with the privileged reviewer process.`);
+            return false;
+        }
+        return true;
+    }
+
+    async run() {
+        const requesters = await this.privilegedRequesters.getRequesters()
+        for (const [privileged_requester_username, privileged_requester_config] of Object.entries(requesters)) {
+            // console.log(privileged_requester_username);
+            // If privileged_requester_username is not the creator of the PR, move on
+            // If privileged_requester_username is the creator of the PR, check the remaining config
+            console.log(`PR creator is ${this.pullRequest.prCreator}. Testing against ${privileged_requester_username}`)
+            if (this.pullRequest.prCreator !== privileged_requester_username) {
+                continue;
+            }
+            await this.processPrivilegedReviewer(privileged_requester_username, privileged_requester_config)
+        }
+    }
+
+    async processPrivilegedReviewer(privileged_requester_username, privileged_requester_config) {
+
+        console.log(`Privileged requester ${privileged_requester_username} found. Checking PR criteria against the privileged requester configuration.`);
+
+        let commits = await this.processCommits(privileged_requester_username)
+        if (commits === false) {
+            return 0;
+        }
+
+        let labels = await this.processLabels(privileged_requester_config)
+        if (labels === false) {
+            return 0;
+        }
+
+        // If we've gotten this far, the commits are all from the privileged requestor and the labels are correct
+        // We can now approve the PR
+        console.log("Approving the PR for a privileged reviewer.")
+        await this.pullRequest.approve()
+        console.log("PR approved, all set!")
+    }
+}
+
 
 /***/ }),
 
@@ -13626,18 +13636,6 @@ module.exports = require("zlib");
 /******/ 				return fn.r ? promise : result;
 /******/ 			}).then(outerResolve, reject);
 /******/ 			isEvaluating = false;
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__nccwpck_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__nccwpck_require__.d(getter, { a: getter });
-/******/ 			return getter;
 /******/ 		};
 /******/ 	})();
 /******/ 	

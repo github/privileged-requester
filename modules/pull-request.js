@@ -1,5 +1,3 @@
-import core from "@actions/core";
-
 export { PullRequest };
 
 class PullRequest {
