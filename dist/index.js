@@ -20,8 +20,8 @@ const core = __nccwpck_require__(2186);
 let myToken = core.getInput("myToken");
 const robotUserToken = core.getInput("robotUserToken");
 if (robotUserToken !== "") {
-    console.log("Robot User configured. I will use that PAT instead.")
-    myToken = robotUserToken;
+  console.log("Robot User configured. I will use that PAT instead.");
+  myToken = robotUserToken;
 }
 const provider = new _src_github_provider__WEBPACK_IMPORTED_MODULE_0__/* .GitHubProvider */ .C(myToken);
 const pullRequest = new _src_pull_request__WEBPACK_IMPORTED_MODULE_2__/* .PullRequest */ .i(provider);
@@ -13811,10 +13811,12 @@ class Runner {
   }
 
   labelsEqual(prLabels, configuredLabels) {
-    return Array.isArray(prLabels) &&
-        Array.isArray(configuredLabels) &&
-        prLabels.length === configuredLabels.length &&
-        prLabels.every((val, index) => val === configuredLabels[index]);
+    return (
+      Array.isArray(prLabels) &&
+      Array.isArray(configuredLabels) &&
+      prLabels.length === configuredLabels.length &&
+      prLabels.every((val, index) => val === configuredLabels[index])
+    );
   }
 
   async processLabels(privileged_requester_config) {
@@ -13830,7 +13832,10 @@ class Runner {
     console.log(
       `Comparing the PR Labels: ${prLabelArray} with the privileged requester labels: ${privileged_requester_config.labels}`
     );
-    if (this.labelsEqual(prLabelArray, privileged_requester_config.labels) === false) {
+    if (
+      this.labelsEqual(prLabelArray, privileged_requester_config.labels) ===
+      false
+    ) {
       console.log(
         `Invalid label(s) found. I will not proceed with the privileged reviewer process.`
       );

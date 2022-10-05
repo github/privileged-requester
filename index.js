@@ -7,8 +7,8 @@ const core = require("@actions/core");
 let myToken = core.getInput("myToken");
 const robotUserToken = core.getInput("robotUserToken");
 if (robotUserToken !== "") {
-    console.log("Robot User configured. I will use that PAT instead.")
-    myToken = robotUserToken;
+  console.log("Robot User configured. I will use that PAT instead.");
+  myToken = robotUserToken;
 }
 const provider = new GitHubProvider(myToken);
 const pullRequest = new PullRequest(provider);

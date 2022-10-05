@@ -22,10 +22,12 @@ class Runner {
   }
 
   labelsEqual(prLabels, configuredLabels) {
-    return Array.isArray(prLabels) &&
-        Array.isArray(configuredLabels) &&
-        prLabels.length === configuredLabels.length &&
-        prLabels.every((val, index) => val === configuredLabels[index]);
+    return (
+      Array.isArray(prLabels) &&
+      Array.isArray(configuredLabels) &&
+      prLabels.length === configuredLabels.length &&
+      prLabels.every((val, index) => val === configuredLabels[index])
+    );
   }
 
   async processLabels(privileged_requester_config) {
@@ -41,7 +43,10 @@ class Runner {
     console.log(
       `Comparing the PR Labels: ${prLabelArray} with the privileged requester labels: ${privileged_requester_config.labels}`
     );
-    if (this.labelsEqual(prLabelArray, privileged_requester_config.labels) === false) {
+    if (
+      this.labelsEqual(prLabelArray, privileged_requester_config.labels) ===
+      false
+    ) {
       console.log(
         `Invalid label(s) found. I will not proceed with the privileged reviewer process.`
       );
