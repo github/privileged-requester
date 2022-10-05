@@ -1,0 +1,21 @@
+{
+  "pull_request": {
+    "number": 1,
+    "user": {
+      "login": "dependabot[bot]"
+    },
+    "head": {
+      "ref": "sample-head-ref"
+    },
+    "base": {
+      "ref": "sample-base-ref"
+    },
+    "body": "Please pull these awesome changes in!",
+    "labels": [
+      {
+        "name": "privileged-requester",
+        "description": "Privileged Requester"
+      }
+    ]
+  }
+}

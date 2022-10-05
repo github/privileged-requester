@@ -2,11 +2,15 @@
   "name": "privileged-requester",
   "version": "1.0.0",
   "description": "GitHub Action which checks a PR against configurable criteria to determine whether or not the PR should be automatically approved",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
+    "format": "prettier --write '**/*.js'",
+    "format-check": "prettier --check '**/*.js'",
     "lint": "eslint .",
+    "package": "ncc build index.js -o dist --source-map --license licenses.txt",
     "prepare": "ncc build index.js -o dist --source-map --license licenses.txt",
     "test": "jest",
+    "bundle": "npm run format && npm run package",
     "all": "npm run lint && npm run prepare && npm run test"
   },
   "repository": {
@@ -26,11 +30,14 @@
   "homepage": "https://github.com/danhoerst/privileged-requester#readme",
   "dependencies": {
     "@actions/core": "^1.2.5",
-    "@actions/github": "^5.1.1"
+    "@actions/github": "^5.1.1",
+    "js-yaml": "^4.1.0"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.31.1",
+    "@babel/plugin-transform-modules-commonjs": "^7.18.6",
+    "@vercel/ncc": "^0.34.0",
     "eslint": "^8.0.0",
-    "jest": "^27.2.5"
+    "jest": "^27.5.1",
+    "prettier": "^2.7.1"
   }
 }

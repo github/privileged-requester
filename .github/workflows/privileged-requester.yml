@@ -1,0 +1,15 @@
+name: "privileged-requester"
+on:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./
+      with:
+        myToken: ${{ secrets.GITHUB_TOKEN }}
+        path: config/privileged-requester.yaml
+        prCreator: ${{ github.event.pull_request.user.login }}
+        prNumber: ${{ github.event.pull_request.number }}

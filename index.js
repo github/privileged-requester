@@ -1,18 +1,12 @@
-const github = require('@actions/github');
-const core = require('@actions/core');
+import { GitHubProvider } from "./src/github-provider";
+import { PrivilegedRequester } from "./src/privileged-requester";
+import { PullRequest } from "./src/pull-request";
+import { Runner } from "./src/runner";
 
-async function run() {
-  const myToken = core.getInput('myToken');
-
-  const octokit = github.getOctokit(myToken)
-
-  const { data: configContent } = await octokit.rest.repos.getContent({
-    owner: core.getInput('owner'),
-    repo: core.getInput('repo'),
-    path: core.getInput('path'),
-  });
-
-  console.log(configContent);
-}
-
-run();
+const core = require("@actions/core");
+const myToken = core.getInput("myToken");
+const provider = new GitHubProvider(myToken);
+const pullRequest = new PullRequest(provider);
+const privilegedRequester = new PrivilegedRequester(provider);
+const runner = new Runner(pullRequest, privilegedRequester);
+await runner.run();
