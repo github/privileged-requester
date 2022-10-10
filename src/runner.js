@@ -57,6 +57,9 @@ class Runner {
 
   async run() {
     const requesters = await this.privilegedRequesters.getRequesters();
+    if (requesters === false) {
+      return;
+    }
     for (const [
       privileged_requester_username,
       privileged_requester_config,
