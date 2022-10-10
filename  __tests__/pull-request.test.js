@@ -1,5 +1,5 @@
-import { GitHubProvider } from "./github-provider";
-import { PullRequest } from "./pull-request";
+import { GitHubProvider } from "../src/github-provider";
+import { PullRequest } from "../src/pull-request";
 
 test("We can create a review", async () => {
   let provider = new GitHubProvider("token");

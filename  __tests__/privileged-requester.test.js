@@ -1,5 +1,5 @@
-import { GitHubProvider } from "./github-provider";
-import { PrivilegedRequester } from "./privileged-requester";
+import { GitHubProvider } from "../src/github-provider";
+import { PrivilegedRequester } from "../src/privileged-requester";
 
 test("We receive the expected config content", async () => {
   let configContent = `---

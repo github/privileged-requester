@@ -1,5 +1,5 @@
 const nock = require("nock");
-const { GitHubProvider } = require("./github-provider");
+const { GitHubProvider } = require("../src/github-provider");
 
 test("It creates an approved review", async () => {
   process.env["GITHUB_REPOSITORY"] = "foo/bar";
