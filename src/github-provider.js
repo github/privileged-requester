@@ -19,6 +19,7 @@ class GitHubProvider {
   }
 
   async getConfigContent() {
+    // getContent defaults to the main branch
     const { data: configContent } = await this.octokit.rest.repos.getContent({
       owner: github.context.repo.owner,
       repo: github.context.repo.repo,

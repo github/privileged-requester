@@ -57,6 +57,9 @@ class Runner {
 
   async run() {
     const requesters = await this.privilegedRequesters.getRequesters();
+    if (requesters === false) {
+      return;
+    }
     for (const [
       privileged_requester_username,
       privileged_requester_config,
@@ -87,12 +90,12 @@ class Runner {
 
     let commits = await this.processCommits(privileged_requester_username);
     if (commits === false) {
-      return 0;
+      return false;
     }
 
     let labels = await this.processLabels(privileged_requester_config);
     if (labels === false) {
-      return 0;
+      return false;
     }
 
     // If we've gotten this far, the commits are all from the privileged requestor and the labels are correct
@@ -100,5 +103,6 @@ class Runner {
     console.log("Approving the PR for a privileged reviewer.");
     await this.pullRequest.approve();
     console.log("PR approved, all set!");
+    return true;
   }
 }
