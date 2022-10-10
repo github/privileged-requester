@@ -17,8 +17,8 @@ inputs:
     description: 'The number of the PR for this pull request event'
     required: true
 outputs:
-  time: # output will be available to future steps
-    description: 'The current time after waiting'
+  approved: # output will be available to future steps
+    description: "Whether or not the PR was approved - 'true' or 'false'"
 runs:
   using: 'node16'
   main: 'dist/index.js'

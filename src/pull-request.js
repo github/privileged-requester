@@ -17,6 +17,7 @@ class PullRequest {
       core.info("Approving the PR for a privileged reviewer.");
       await this.github.createReview(this.prNumber, "APPROVE");
       core.info("PR approved, all set!");
+      core.setOutput("approved", 'true');
     } catch (err) {
       core.error("PR not approved.");
       core.setFailed(err.message);
