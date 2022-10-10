@@ -1,5 +1,8 @@
 name: 'Privileged Requester'
 description: 'Checks a PR against configurable criteria to determine whether or not the PR should be automatically approved'
+branding:
+  icon: 'check'
+  color: 'green'
 inputs:
   myToken:
     description: 'Repo scoped token'
