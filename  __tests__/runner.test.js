@@ -2,7 +2,7 @@ import { GitHubProvider } from "../src/github-provider";
 import { PrivilegedRequester } from "../src/privileged-requester";
 import { PullRequest } from "../src/pull-request";
 import { Runner } from "../src/runner";
-import * as core from '@actions/core'
+import * as core from "@actions/core";
 
 let provider = new GitHubProvider("token");
 let privilegedRequester = new PrivilegedRequester(provider);

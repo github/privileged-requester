@@ -1,6 +1,6 @@
 import { GitHubProvider } from "../src/github-provider";
 import { PullRequest } from "../src/pull-request";
-import * as core from '@actions/core'
+import * as core from "@actions/core";
 
 // jest spy on to silence output
 jest.spyOn(core, "info").mockImplementation(() => {});

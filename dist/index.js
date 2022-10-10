@@ -13717,6 +13717,10 @@ class GitHubProvider {
 /* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
 /* harmony export */   "b": () => (/* binding */ PrivilegedRequester)
 /* harmony export */ });
+/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(2186);
+/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__nccwpck_require__.n(_actions_core__WEBPACK_IMPORTED_MODULE_0__);
+
+
 
 
 const yaml = __nccwpck_require__(1917);
@@ -13734,9 +13738,10 @@ class PrivilegedRequester {
         this.configContents = yaml.load(config);
         this.requesters = this.configContents["requesters"];
       } catch (err) {
-        console.log(
+        _actions_core__WEBPACK_IMPORTED_MODULE_0__.error(
           "There was a problem with the privileged requester configuration."
         );
+        _actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed(err.message);
         return false;
       }
     }
@@ -13754,6 +13759,10 @@ class PrivilegedRequester {
 /* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
 /* harmony export */   "i": () => (/* binding */ PullRequest)
 /* harmony export */ });
+/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(2186);
+/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__nccwpck_require__.n(_actions_core__WEBPACK_IMPORTED_MODULE_0__);
+
+
 
 
 class PullRequest {
@@ -13768,12 +13777,13 @@ class PullRequest {
 
   async approve() {
     try {
-      console.log("Approving the PR for a privileged reviewer.");
+      _actions_core__WEBPACK_IMPORTED_MODULE_0__.info("Approving the PR for a privileged reviewer.");
       await this.github.createReview(this.prNumber, "APPROVE");
-      console.log("PR approved, all set!");
+      _actions_core__WEBPACK_IMPORTED_MODULE_0__.info("PR approved, all set!");
+      _actions_core__WEBPACK_IMPORTED_MODULE_0__.setOutput("approved", "true");
     } catch (err) {
-      console.log(err.message);
-      console.log("PR not approved.");
+      _actions_core__WEBPACK_IMPORTED_MODULE_0__.error("PR not approved.");
+      _actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed(err.message);
     }
   }
 
@@ -13802,6 +13812,10 @@ class PullRequest {
 /* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
 /* harmony export */   "R": () => (/* binding */ Runner)
 /* harmony export */ });
+/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(2186);
+/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__nccwpck_require__.n(_actions_core__WEBPACK_IMPORTED_MODULE_0__);
+
+
 
 
 class Runner {
@@ -13816,7 +13830,7 @@ class Runner {
       let commitAuthor = commit.author.login.toLowerCase();
 
       if (commitAuthor !== privileged_requester_username) {
-        console.log(
+        _actions_core__WEBPACK_IMPORTED_MODULE_0__.warning(
           `Unexpected commit author found by ${commitAuthor}! Commits should be authored by ${privileged_requester_username} I will not proceed with the privileged reviewer process.`
         );
         return false;
@@ -13844,14 +13858,14 @@ class Runner {
       prLabelArray.push(prLabelName);
     }
 
-    console.log(
+    _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(
       `Comparing the PR Labels: ${prLabelArray} with the privileged requester labels: ${privileged_requester_config.labels}`
     );
     if (
       this.labelsEqual(prLabelArray, privileged_requester_config.labels) ===
       false
     ) {
-      console.log(
+      _actions_core__WEBPACK_IMPORTED_MODULE_0__.warning(
         `Invalid label(s) found. I will not proceed with the privileged reviewer process.`
       );
       return false;
@@ -13871,7 +13885,7 @@ class Runner {
       // console.log(privileged_requester_username);
       // If privileged_requester_username is not the creator of the PR, move on
       // If privileged_requester_username is the creator of the PR, check the remaining config
-      console.log(
+      _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(
         `PR creator is ${this.pullRequest.prCreator}. Testing against ${privileged_requester_username}`
       );
       if (this.pullRequest.prCreator !== privileged_requester_username) {
@@ -13888,7 +13902,7 @@ class Runner {
     privileged_requester_username,
     privileged_requester_config
   ) {
-    console.log(
+    _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(
       `Privileged requester ${privileged_requester_username} found. Checking PR criteria against the privileged requester configuration.`
     );
 
@@ -14152,6 +14166,18 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /******/ 				return fn.r ? promise : result;
 /******/ 			}).then(outerResolve, reject);
 /******/ 			isEvaluating = false;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__nccwpck_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__nccwpck_require__.d(getter, { a: getter });
+/******/ 			return getter;
 /******/ 		};
 /******/ 	})();
 /******/ 	
