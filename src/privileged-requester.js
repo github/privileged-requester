@@ -14,9 +14,11 @@ class PrivilegedRequester {
         const config = await this.github.getConfigContent();
         this.configContents = yaml.load(config);
         this.requesters = this.configContents["requesters"];
-      } catch(err) {
-        console.log("There was a problem with the privileged requester configuration.")
-        return false
+      } catch (err) {
+        console.log(
+          "There was a problem with the privileged requester configuration."
+        );
+        return false;
       }
     }
     return this.requesters;

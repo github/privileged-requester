@@ -13676,6 +13676,7 @@ class GitHubProvider {
   }
 
   async getConfigContent() {
+    // getContent defaults to the main branch
     const { data: configContent } = await this.octokit.rest.repos.getContent({
       owner: github.context.repo.owner,
       repo: github.context.repo.repo,
@@ -13728,9 +13729,16 @@ class PrivilegedRequester {
 
   async getRequesters() {
     if (this.requesters === false) {
-      const config = await this.github.getConfigContent();
-      this.configContents = yaml.load(config);
-      this.requesters = this.configContents["requesters"];
+      try {
+        const config = await this.github.getConfigContent();
+        this.configContents = yaml.load(config);
+        this.requesters = this.configContents["requesters"];
+      } catch (err) {
+        console.log(
+          "There was a problem with the privileged requester configuration."
+        );
+        return false;
+      }
     }
     return this.requesters;
   }
@@ -13850,6 +13858,9 @@ class Runner {
 
   async run() {
     const requesters = await this.privilegedRequesters.getRequesters();
+    if (requesters === false) {
+      return;
+    }
     for (const [
       privileged_requester_username,
       privileged_requester_config,
