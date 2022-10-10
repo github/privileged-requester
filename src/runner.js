@@ -100,9 +100,7 @@ class Runner {
 
     // If we've gotten this far, the commits are all from the privileged requestor and the labels are correct
     // We can now approve the PR
-    console.log("Approving the PR for a privileged reviewer.");
     await this.pullRequest.approve();
-    console.log("PR approved, all set!");
     return true;
   }
 }
