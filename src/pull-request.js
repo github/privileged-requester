@@ -1,3 +1,5 @@
+import * as core from '@actions/core'
+
 export { PullRequest };
 
 class PullRequest {
@@ -12,12 +14,12 @@ class PullRequest {
 
   async approve() {
     try {
-      console.log("Approving the PR for a privileged reviewer.");
+      core.info("Approving the PR for a privileged reviewer.");
       await this.github.createReview(this.prNumber, "APPROVE");
-      console.log("PR approved, all set!");
+      core.info("PR approved, all set!");
     } catch (err) {
-      console.log(err.message);
-      console.log("PR not approved.");
+      core.error("PR not approved.");
+      core.setFailed(err.message);
     }
   }
 
