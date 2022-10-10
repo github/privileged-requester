@@ -1,6 +1,7 @@
 name: "privileged-requester"
 on:
   pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
 
 permissions:
   pull-requests: write
