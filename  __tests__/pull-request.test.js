@@ -1,5 +1,14 @@
-import { GitHubProvider } from "./github-provider";
-import { PullRequest } from "./pull-request";
+import { GitHubProvider } from "../src/github-provider";
+import { PullRequest } from "../src/pull-request";
+import * as core from "@actions/core";
+
+// jest spy on to silence output
+jest.spyOn(core, "info").mockImplementation(() => {});
+jest.spyOn(core, "error").mockImplementation(() => {});
+jest.spyOn(core, "warning").mockImplementation(() => {});
+jest.spyOn(core, "debug").mockImplementation(() => {});
+jest.spyOn(core, "setFailed").mockImplementation(() => {});
+jest.spyOn(core, "setOutput").mockImplementation(() => {});
 
 test("We can create a review", async () => {
   let provider = new GitHubProvider("token");

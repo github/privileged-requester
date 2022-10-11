@@ -1,24 +1,31 @@
 name: 'Privileged Requester'
 description: 'Checks a PR against configurable criteria to determine whether or not the PR should be automatically approved'
+branding:
+  icon: 'check'
+  color: 'green'
 inputs:
   myToken:
-    description: 'Repo scoped token'
+    description: 'Repository scoped token'
     required: true
+    default: ${{ github.token }}
   robotUserToken:
     description: 'An alternative robot user PAT to be used instead of the built-in Actions token'
     required: false
   path:
     description: 'Path where the privileged requester configuration can be found'
     required: true
+    default: config/privileged-requester.yaml
   prCreator:
     description: 'The creator of the PR for this pull request event'
     required: true
+    default: ${{ github.event.pull_request.user.login }}
   prNumber:
     description: 'The number of the PR for this pull request event'
     required: true
+    default: ${{ github.event.pull_request.number }}
 outputs:
-  time: # output will be available to future steps
-    description: 'The current time after waiting'
+  approved: # output will be available to future steps
+    description: "Whether or not the PR was approved - 'true' or 'false'"
 runs:
   using: 'node16'
   main: 'dist/index.js'

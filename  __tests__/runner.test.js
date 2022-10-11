@@ -1,12 +1,21 @@
-import { GitHubProvider } from "./github-provider";
-import { PrivilegedRequester } from "./privileged-requester";
-import { PullRequest } from "./pull-request";
-import { Runner } from "./runner";
+import { GitHubProvider } from "../src/github-provider";
+import { PrivilegedRequester } from "../src/privileged-requester";
+import { PullRequest } from "../src/pull-request";
+import { Runner } from "../src/runner";
+import * as core from "@actions/core";
 
 let provider = new GitHubProvider("token");
 let privilegedRequester = new PrivilegedRequester(provider);
 let pullRequest = new PullRequest(provider);
 let runner = new Runner(pullRequest);
+
+// jest spy on to silence output
+jest.spyOn(core, "info").mockImplementation(() => {});
+jest.spyOn(core, "error").mockImplementation(() => {});
+jest.spyOn(core, "warning").mockImplementation(() => {});
+jest.spyOn(core, "debug").mockImplementation(() => {});
+jest.spyOn(core, "setFailed").mockImplementation(() => {});
+jest.spyOn(core, "setOutput").mockImplementation(() => {});
 
 describe("processCommits", () => {
   test("We process commits successfully", async () => {

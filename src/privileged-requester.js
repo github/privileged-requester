@@ -1,3 +1,5 @@
+import * as core from "@actions/core";
+
 export { PrivilegedRequester };
 
 const yaml = require("js-yaml");
@@ -15,9 +17,10 @@ class PrivilegedRequester {
         this.configContents = yaml.load(config);
         this.requesters = this.configContents["requesters"];
       } catch (err) {
-        console.log(
+        core.error(
           "There was a problem with the privileged requester configuration."
         );
+        core.setFailed(err.message);
         return false;
       }
     }

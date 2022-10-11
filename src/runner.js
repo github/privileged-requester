@@ -1,3 +1,5 @@
+import * as core from "@actions/core";
+
 export { Runner };
 
 class Runner {
@@ -12,7 +14,7 @@ class Runner {
       let commitAuthor = commit.author.login.toLowerCase();
 
       if (commitAuthor !== privileged_requester_username) {
-        console.log(
+        core.warning(
           `Unexpected commit author found by ${commitAuthor}! Commits should be authored by ${privileged_requester_username} I will not proceed with the privileged reviewer process.`
         );
         return false;
@@ -40,14 +42,14 @@ class Runner {
       prLabelArray.push(prLabelName);
     }
 
-    console.log(
+    core.info(
       `Comparing the PR Labels: ${prLabelArray} with the privileged requester labels: ${privileged_requester_config.labels}`
     );
     if (
       this.labelsEqual(prLabelArray, privileged_requester_config.labels) ===
       false
     ) {
-      console.log(
+      core.warning(
         `Invalid label(s) found. I will not proceed with the privileged reviewer process.`
       );
       return false;
@@ -67,7 +69,7 @@ class Runner {
       // console.log(privileged_requester_username);
       // If privileged_requester_username is not the creator of the PR, move on
       // If privileged_requester_username is the creator of the PR, check the remaining config
-      console.log(
+      core.info(
         `PR creator is ${this.pullRequest.prCreator}. Testing against ${privileged_requester_username}`
       );
       if (this.pullRequest.prCreator !== privileged_requester_username) {
@@ -84,7 +86,7 @@ class Runner {
     privileged_requester_username,
     privileged_requester_config
   ) {
-    console.log(
+    core.info(
       `Privileged requester ${privileged_requester_username} found. Checking PR criteria against the privileged requester configuration.`
     );
 
