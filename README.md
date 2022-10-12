@@ -54,13 +54,14 @@ Here are the configuration options for this Action:
 
 ## Inputs 📥
 
-| Input | Required? | Default | Description |
-| ----- | --------- | ------- | ----------- |
-| myToken | yes | ${{ github.token }} | The GitHub token used to create an authenticated client - Provided for you by default! |
-| robotUserToken | no | - | An alternative robot user PAT to be used instead of the built-in Actions token |
-| path | yes | config/privileged-requester.yaml | Path where the privileged requester configuration can be found |
-| prCreator | yes | ${{ github.event.pull_request.user.login }} | The creator of the PR for this pull request event |
-| prNumber | yes | ${{ github.event.pull_request.number }} | The number of the PR for this pull request event |
+| Input          | Required? | Default                                     | Description |
+|----------------| --------- |---------------------------------------------| ----------- |
+| myToken        | yes | ${{ github.token }}                         | The GitHub token used to create an authenticated client - Provided for you by default! |
+| robotUserToken | no | -                                           | An alternative robot user PAT to be used instead of the built-in Actions token |
+| path           | yes | config/privileged-requester.yaml            | Path where the privileged requester configuration can be found |
+| prCreator      | yes | ${{ github.event.pull_request.user.login }} | The creator of the PR for this pull request event |
+| prNumber       | yes | ${{ github.event.pull_request.number }}     | The number of the PR for this pull request event |
+| checkCommits   | yes | "true"                                       | An option to check that every commit in the PR is made from the privileged requester |
 
 ## Outputs 📤
 
