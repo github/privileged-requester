@@ -10,6 +10,9 @@ class Runner {
 
   async processCommits(privileged_requester_username) {
     // Check all commits of the PR to verify that they are all from the privileged requester, otherwise return from the check
+    core.info(
+      `Comparing the PR commits to verify that they are all from ${privileged_requester_username}`
+    );
     for (const [, commit] of Object.entries(this.pullRequest.listCommits())) {
       let commitAuthor = commit.author.login.toLowerCase();
 
