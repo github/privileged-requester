@@ -6,8 +6,6 @@ This GitHub Action will automatically approve pull requests based off of request
 
 The workflow should be configured like:
 
-> Where `vX.X.X` is the latest release version found on the releases page
-
 ```yaml
 jobs:
   check:
