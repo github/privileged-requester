@@ -10,6 +10,9 @@ class Runner {
 
   async processCommits(privileged_requester_username) {
     // Check all commits of the PR to verify that they are all from the privileged requester, otherwise return from the check
+    core.info(
+      `Comparing the PR commits to verify that they are all from ${privileged_requester_username}`
+    );
     for (const [, commit] of Object.entries(this.pullRequest.listCommits())) {
       let commitAuthor = commit.author.login.toLowerCase();
 
@@ -90,14 +93,20 @@ class Runner {
       `Privileged requester ${privileged_requester_username} found. Checking PR criteria against the privileged requester configuration.`
     );
 
-    let commits = await this.processCommits(privileged_requester_username);
-    if (commits === false) {
-      return false;
+    this.checkCommits = core.getInput("checkCommits");
+    if (this.checkCommits === "true") {
+      let commits = await this.processCommits(privileged_requester_username);
+      if (commits === false) {
+        return false;
+      }
     }
 
-    let labels = await this.processLabels(privileged_requester_config);
-    if (labels === false) {
-      return false;
+    this.checkLabels = core.getInput("checkLabels");
+    if (this.checkLabels === "true") {
+      let labels = await this.processLabels(privileged_requester_config);
+      if (labels === false) {
+        return false;
+      }
     }
 
     // If we've gotten this far, the commits are all from the privileged requestor and the labels are correct

@@ -5,7 +5,6 @@ import { Runner } from "../src/runner";
 import * as core from "@actions/core";
 
 let provider = new GitHubProvider("token");
-let privilegedRequester = new PrivilegedRequester(provider);
 let pullRequest = new PullRequest(provider);
 let runner = new Runner(pullRequest);
 
@@ -91,7 +90,8 @@ describe("processLabels", () => {
 });
 
 describe("processPrivilegedReviewer", () => {
-  test("We process commits and labels successfully", async () => {
+  test("We process commits and labels successfully with all options enabled", async () => {
+    process.env["INPUT_CHECKCOMMITS"] = "true";
     let prLabels = [{ name: "bug" }, { name: "feature-request" }];
     let spyLabels = jest
       .spyOn(pullRequest, "listLabels")
@@ -108,9 +108,11 @@ describe("processPrivilegedReviewer", () => {
       labels: ["bug", "feature-request"],
     });
     expect(commits).toStrictEqual(true);
+    process.env["INPUT_CHECKCOMMITS"] = "";
   });
 
-  test("We process commits unsuccessfully", async () => {
+  test("We process commits unsuccessfully with the option enabled", async () => {
+    process.env["INPUT_CHECKCOMMITS"] = "true";
     let prLabels = [{ name: "bug" }, { name: "feature-request" }];
     let spyLabels = jest
       .spyOn(pullRequest, "listLabels")
@@ -130,9 +132,33 @@ describe("processPrivilegedReviewer", () => {
       labels: ["bug", "feature-request"],
     });
     expect(commits).toStrictEqual(false);
+    process.env["INPUT_CHECKCOMMITS"] = "";
   });
 
-  test("We process labels unsuccessfully", async () => {
+  test("We allow bad commits when the option to check them is not set", async () => {
+    let prLabels = [{ name: "bug" }, { name: "feature-request" }];
+    let spyLabels = jest
+      .spyOn(pullRequest, "listLabels")
+      .mockImplementation(() => prLabels);
+    expect(pullRequest.listLabels()).toBe(prLabels);
+
+    let prCommits = [
+      { author: { login: "robot" } },
+      { author: { login: "malicious" } },
+    ];
+    let spyCommits = jest
+      .spyOn(pullRequest, "listCommits")
+      .mockImplementation(() => prCommits);
+    expect(pullRequest.listCommits()).toBe(prCommits);
+
+    let commits = await runner.processPrivilegedReviewer("robot", {
+      labels: ["bug", "feature-request"],
+    });
+    expect(commits).toStrictEqual(true);
+  });
+
+  test("We process labels unsuccessfully with the option enabled", async () => {
+    process.env["INPUT_CHECKLABELS"] = "true";
     let prLabels = [{ name: "bug" }, { name: "feature-request" }];
     let spyLabels = jest
       .spyOn(pullRequest, "listLabels")
@@ -149,5 +175,25 @@ describe("processPrivilegedReviewer", () => {
       labels: ["new", "feature-request"],
     });
     expect(commits).toStrictEqual(false);
+    process.env["INPUT_CHECKLABELS"] = "";
+  });
+
+  test("We allow bad commits when the option to check them is not set", async () => {
+    let prLabels = [{ name: "bug" }, { name: "feature-request" }];
+    let spyLabels = jest
+      .spyOn(pullRequest, "listLabels")
+      .mockImplementation(() => prLabels);
+    expect(pullRequest.listLabels()).toBe(prLabels);
+
+    let prCommits = [{ author: { login: "robot" } }];
+    let spyCommits = jest
+      .spyOn(pullRequest, "listCommits")
+      .mockImplementation(() => prCommits);
+    expect(pullRequest.listCommits()).toBe(prCommits);
+
+    let commits = await runner.processPrivilegedReviewer("robot", {
+      labels: ["new", "feature-request"],
+    });
+    expect(commits).toStrictEqual(true);
   });
 });
