@@ -8,6 +8,7 @@ class PullRequest {
     this.github = provider;
     this.prCreator = core.getInput("prCreator").toLowerCase();
     this.prNumber = core.getInput("prNumber");
+    this.diff = false;
     this.prCommits = false;
     this.prLabels = false;
   }
@@ -22,6 +23,13 @@ class PullRequest {
       core.error("PR not approved.");
       core.setFailed(err.message);
     }
+  }
+
+  async getDiff() {
+    if (this.diff === false) {
+      this.diff = await this.github.getPRDiff(this.prNumber);
+    }
+    return this.diff;
   }
 
   async listCommits() {

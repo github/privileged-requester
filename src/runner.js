@@ -11,7 +11,7 @@ class Runner {
   async processCommits(privileged_requester_username) {
     // Check all commits of the PR to verify that they are all from the privileged requester, otherwise return from the check
     core.info(
-      `Comparing the PR commits to verify that they are all from ${privileged_requester_username}`
+      `Commits: Comparing the PR commits to verify that they are all from ${privileged_requester_username}`
     );
     for (const [, commit] of Object.entries(this.pullRequest.listCommits())) {
       let commitAuthor = commit.author.login.toLowerCase();
@@ -23,6 +23,29 @@ class Runner {
         return false;
       }
     }
+    core.info(
+      `Commits: All commits are made by ${privileged_requester_username}. Success!`
+    );
+    return true;
+  }
+
+  async processDiff() {
+    core.info(
+      `Diff: Checking the access diff to verify that there are only removals`
+    );
+    let diff = await this.pullRequest.getDiff();
+    let diffArray = diff.split("\n");
+    for (const [, diffLine] of Object.entries(diffArray)) {
+      // Check each line to make sure it doesn't add access
+      if (diffLine.startsWith("+ ")) {
+        console.log(diffLine);
+        core.warning(
+          `Diff: This PR includes additions which are not allowed with the checkDiff option`
+        );
+        return false;
+      }
+    }
+    core.info(`Diff: This PR only includes removals. Success!`);
     return true;
   }
 
@@ -46,17 +69,20 @@ class Runner {
     }
 
     core.info(
-      `Comparing the PR Labels: ${prLabelArray} with the privileged requester labels: ${privileged_requester_config.labels}`
+      `Labels: Comparing the PR Labels: ${prLabelArray} with the privileged requester labels: ${privileged_requester_config.labels}`
     );
     if (
       this.labelsEqual(prLabelArray, privileged_requester_config.labels) ===
       false
     ) {
       core.warning(
-        `Invalid label(s) found. I will not proceed with the privileged reviewer process.`
+        `Labels: Invalid label(s) found. I will not proceed with the privileged reviewer process.`
       );
       return false;
     }
+    core.info(
+      `Labels: Labels on the PR match those in the privileged reviewer config. Success!`
+    );
     return true;
   }
 
@@ -97,6 +123,14 @@ class Runner {
     if (this.checkCommits === "true") {
       let commits = await this.processCommits(privileged_requester_username);
       if (commits === false) {
+        return false;
+      }
+    }
+
+    this.checkDiff = core.getInput("checkDiff");
+    if (this.checkDiff === "true") {
+      let diff = await this.processDiff();
+      if (diff === false) {
         return false;
       }
     }

@@ -7,6 +7,7 @@ class GitHubProvider {
   constructor(token) {
     this.token = token;
     this.octokit = github.getOctokit(token);
+    this.configContent = false;
   }
 
   async createReview(prNumber, reviewEvent) {
@@ -27,6 +28,18 @@ class GitHubProvider {
       mediaType: { format: "raw" },
     });
     return configContent;
+  }
+
+  async getPRDiff(prNumber) {
+    const { data: prDiff } = await this.octokit.rest.pulls.get({
+      owner: github.context.repo.owner,
+      repo: github.context.repo.repo,
+      pull_number: prNumber,
+      mediaType: {
+        format: "diff",
+      },
+    });
+    return prDiff;
   }
 
   async listPRCommits(prNumber) {

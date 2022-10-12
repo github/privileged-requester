@@ -27,6 +27,10 @@ inputs:
     description: 'An option to check that every commit in the PR is made from the privileged requester'
     required: true
     default: 'true'
+  checkDiff:
+    description: 'An option to check that the PR diff only has a removal diff, with no additions'
+    required: true
+    default: 'true'
   checkLabels:
     description: 'An option to check that the labels on the PR match those defined in the privileged requester config'
     required: true
