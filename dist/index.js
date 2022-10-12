@@ -13878,7 +13878,6 @@ class Runner {
         continue;
       }
       if (diffLine.startsWith("+")) {
-        console.log(diffLine);
         _actions_core__WEBPACK_IMPORTED_MODULE_0__.warning(
           `Diff: This PR includes additions which are not allowed with the checkDiff option`
         );

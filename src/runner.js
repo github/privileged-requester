@@ -41,7 +41,6 @@ class Runner {
         continue;
       }
       if (diffLine.startsWith("+")) {
-        console.log(diffLine);
         core.warning(
           `Diff: This PR includes additions which are not allowed with the checkDiff option`
         );
