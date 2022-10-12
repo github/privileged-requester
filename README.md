@@ -62,6 +62,7 @@ Here are the configuration options for this Action:
 | prCreator      | yes | ${{ github.event.pull_request.user.login }} | The creator of the PR for this pull request event |
 | prNumber       | yes | ${{ github.event.pull_request.number }}     | The number of the PR for this pull request event |
 | checkCommits   | yes | "true"                                       | An option to check that every commit in the PR is made from the privileged requester |
+| checkLabels    | yes | "true"                                       | An option to check that the labels on the PR match those defined in the privileged requester config |
 
 ## Outputs 📤
 

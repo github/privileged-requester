@@ -98,9 +98,12 @@ class Runner {
       }
     }
 
-    let labels = await this.processLabels(privileged_requester_config);
-    if (labels === false) {
-      return false;
+    this.checkLabels = core.getInput("checkLabels");
+    if (this.checkLabels === "true") {
+      let labels = await this.processLabels(privileged_requester_config);
+      if (labels === false) {
+        return false;
+      }
     }
 
     // If we've gotten this far, the commits are all from the privileged requestor and the labels are correct
