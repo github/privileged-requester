@@ -37,7 +37,10 @@ class Runner {
     let diffArray = diff.split("\n");
     for (const [, diffLine] of Object.entries(diffArray)) {
       // Check each line to make sure it doesn't add access
-      if (diffLine.startsWith("+ ")) {
+      if (diffLine.startsWith("+++")) {
+        continue;
+      }
+      if (diffLine.startsWith("+")) {
         console.log(diffLine);
         core.warning(
           `Diff: This PR includes additions which are not allowed with the checkDiff option`
