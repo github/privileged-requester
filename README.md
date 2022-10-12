@@ -5,7 +5,7 @@ This GitHub Action will automatically approve pull requests based off of request
 ## Workflow Configuration
 
 The workflow should be configured like:
-
+ADDDING
 > Where `vX.X.X` is the latest release version found on the releases page
 
 ```yaml
