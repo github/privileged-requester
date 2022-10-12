@@ -13664,6 +13664,7 @@ class GitHubProvider {
   constructor(token) {
     this.token = token;
     this.octokit = github.getOctokit(token);
+    this.configContent = false;
   }
 
   async createReview(prNumber, reviewEvent) {
@@ -13684,6 +13685,18 @@ class GitHubProvider {
       mediaType: { format: "raw" },
     });
     return configContent;
+  }
+
+  async getPRDiff(prNumber) {
+    const { data: prDiff } = await this.octokit.rest.pulls.get({
+      owner: github.context.repo.owner,
+      repo: github.context.repo.repo,
+      pull_number: prNumber,
+      mediaType: {
+        format: "diff",
+      },
+    });
+    return prDiff;
   }
 
   async listPRCommits(prNumber) {
@@ -13771,6 +13784,7 @@ class PullRequest {
     this.github = provider;
     this.prCreator = core.getInput("prCreator").toLowerCase();
     this.prNumber = core.getInput("prNumber");
+    this.diff = false;
     this.prCommits = false;
     this.prLabels = false;
   }
@@ -13785,6 +13799,13 @@ class PullRequest {
       _actions_core__WEBPACK_IMPORTED_MODULE_0__.error("PR not approved.");
       _actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed(err.message);
     }
+  }
+
+  async getDiff() {
+    if (this.diff === false) {
+      this.diff = await this.github.getPRDiff(this.prNumber);
+    }
+    return this.diff;
   }
 
   async listCommits() {
@@ -13827,7 +13848,7 @@ class Runner {
   async processCommits(privileged_requester_username) {
     // Check all commits of the PR to verify that they are all from the privileged requester, otherwise return from the check
     _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(
-      `Comparing the PR commits to verify that they are all from ${privileged_requester_username}`
+      `Commits: Comparing the PR commits to verify that they are all from ${privileged_requester_username}`
     );
     for (const [, commit] of Object.entries(this.pullRequest.listCommits())) {
       let commitAuthor = commit.author.login.toLowerCase();
@@ -13839,6 +13860,31 @@ class Runner {
         return false;
       }
     }
+    _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(
+      `Commits: All commits are made by ${privileged_requester_username}. Success!`
+    );
+    return true;
+  }
+
+  async processDiff() {
+    _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(
+      `Diff: Checking the access diff to verify that there are only removals`
+    );
+    let diff = await this.pullRequest.getDiff();
+    let diffArray = diff.split("\n");
+    for (const [, diffLine] of Object.entries(diffArray)) {
+      // Check each line to make sure it doesn't add access
+      if (diffLine.startsWith("+++")) {
+        continue;
+      }
+      if (diffLine.startsWith("+")) {
+        _actions_core__WEBPACK_IMPORTED_MODULE_0__.warning(
+          `Diff: This PR includes additions which are not allowed with the checkDiff option`
+        );
+        return false;
+      }
+    }
+    _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Diff: This PR only includes removals. Success!`);
     return true;
   }
 
@@ -13862,17 +13908,20 @@ class Runner {
     }
 
     _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(
-      `Comparing the PR Labels: ${prLabelArray} with the privileged requester labels: ${privileged_requester_config.labels}`
+      `Labels: Comparing the PR Labels: ${prLabelArray} with the privileged requester labels: ${privileged_requester_config.labels}`
     );
     if (
       this.labelsEqual(prLabelArray, privileged_requester_config.labels) ===
       false
     ) {
       _actions_core__WEBPACK_IMPORTED_MODULE_0__.warning(
-        `Invalid label(s) found. I will not proceed with the privileged reviewer process.`
+        `Labels: Invalid label(s) found. I will not proceed with the privileged reviewer process.`
       );
       return false;
     }
+    _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(
+      `Labels: Labels on the PR match those in the privileged reviewer config. Success!`
+    );
     return true;
   }
 
@@ -13913,6 +13962,14 @@ class Runner {
     if (this.checkCommits === "true") {
       let commits = await this.processCommits(privileged_requester_username);
       if (commits === false) {
+        return false;
+      }
+    }
+
+    this.checkDiff = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput("checkDiff");
+    if (this.checkDiff === "true") {
+      let diff = await this.processDiff();
+      if (diff === false) {
         return false;
       }
     }

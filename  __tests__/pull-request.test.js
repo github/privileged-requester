@@ -48,3 +48,26 @@ test("We can list labels", async () => {
   let labels = await pullRequest.listLabels();
   expect(labels).toStrictEqual(prLabels);
 });
+
+test("We can get the diff", async () => {
+  let prDiff = `| diff --git a/.github/workflows/check-dist.yml b/.github/workflows/check-dist.yml
+index 2f4e8d9..93c2072 100644
+--- a/.github/workflows/check-dist.yml
++++ b/.github/workflows/check-dist.yml
+@@ -44,7 +44,7 @@ jobs:
+         id: diff
+ 
+       # If index.js was different than expected, upload the expected version as an artifact
+-      - uses: actions/upload-artifact@v2
++      - uses: actions/upload-artifact@v3
+         if: blah
+         with:
+           name: dist`;
+  let provider = new GitHubProvider("token");
+  let spy = jest.spyOn(provider, "getPRDiff").mockImplementation(() => prDiff);
+  expect(provider.getPRDiff()).toBe(prDiff);
+
+  let pullRequest = new PullRequest(provider);
+  let diff = await pullRequest.getDiff();
+  expect(diff).toStrictEqual(prDiff);
+});

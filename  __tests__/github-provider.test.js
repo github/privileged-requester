@@ -49,3 +49,15 @@ test("It lists labels on a PR", async () => {
   let provider = new GitHubProvider("token");
   await provider.listLabelsOnPR(1);
 });
+
+test("It gets the diff of a PR", async () => {
+  process.env["GITHUB_REPOSITORY"] = "foo/bar";
+
+  nock("https://api.github.com")
+    .persist()
+    .get("/repos/foo/bar/pulls/1")
+    .reply(200);
+
+  let provider = new GitHubProvider("token");
+  await provider.getPRDiff(1);
+});
