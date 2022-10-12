@@ -23,6 +23,10 @@ inputs:
     description: 'The number of the PR for this pull request event'
     required: true
     default: ${{ github.event.pull_request.number }}
+  checkCommits:
+    description: 'An option to check that every commit in the PR is made from the privileged requester'
+    required: true
+    default: 'true'
 outputs:
   approved: # output will be available to future steps
     description: "Whether or not the PR was approved - 'true' or 'false'"

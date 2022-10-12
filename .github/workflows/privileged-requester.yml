@@ -18,3 +18,4 @@ jobs:
         path: config/privileged-requester.yaml
         prCreator: ${{ github.event.pull_request.user.login }}
         prNumber: ${{ github.event.pull_request.number }}
+        checkCommits: "true"

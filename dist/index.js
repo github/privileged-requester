@@ -13906,9 +13906,12 @@ class Runner {
       `Privileged requester ${privileged_requester_username} found. Checking PR criteria against the privileged requester configuration.`
     );
 
-    let commits = await this.processCommits(privileged_requester_username);
-    if (commits === false) {
-      return false;
+    this.checkCommits = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput("checkCommits");
+    if (this.checkCommits === "true") {
+      let commits = await this.processCommits(privileged_requester_username);
+      if (commits === false) {
+        return false;
+      }
     }
 
     let labels = await this.processLabels(privileged_requester_config);
