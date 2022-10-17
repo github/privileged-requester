@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/danhoerst/privileged-requester.git"
+    "url": "git+https://github.com/github/privileged-requester.git"
   },
   "keywords": [
     "GitHub",
@@ -25,9 +25,9 @@
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/danhoerst/privileged-requester/issues"
+    "url": "https://github.com/github/privileged-requester/issues"
   },
-  "homepage": "https://github.com/danhoerst/privileged-requester#readme",
+  "homepage": "https://github.com/github/privileged-requester#readme",
   "dependencies": {
     "@actions/core": "^1.2.5",
     "@actions/github": "^5.1.1",

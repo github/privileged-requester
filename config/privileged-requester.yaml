@@ -1,8 +1,5 @@
 ---
 requesters:
-  danhoerst:
-    labels:
-      - testing
   dependabot[bot]:
     labels:
       - dependencies
