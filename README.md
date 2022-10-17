@@ -17,7 +17,7 @@ jobs:
     - uses: actions/checkout@v3
 
     # run privileged-requester
-    - uses: DanHoerst/privileged-requester@vX.X.X
+    - uses: github/privileged-requester@vX.X.X
 ```
 
 See the example in [the workflow folder](.github/workflows/privileged-requester.yml)
@@ -29,9 +29,6 @@ In the target repo, the privileged requester functionality should be configured 
 ```yaml
 ---
 requesters:
-  danhoerst:
-    labels:
-      - testing
   dependabot[bot]:
     labels:
       - dependencies
