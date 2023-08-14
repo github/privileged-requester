@@ -59,11 +59,11 @@ class Runner {
     const prLabelSet = new Set(prLabels);
     const configuredLabelsSet = new Set(configuredLabels);
 
-      for (const label of prLabelSet) {
-        if (!configuredLabelsSet.has(label)) {
-          return false;
-            }
-        }
+    for (const label of prLabelSet) {
+      if (!configuredLabelsSet.has(label)) {
+        return false;
+          }
+      }
 
     return true;
   }
