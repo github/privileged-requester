@@ -54,7 +54,7 @@ class Runner {
   labelsEqual(prLabels, configuredLabels) {
     if (prLabels.length !== configuredLabels.length) {
       return false;
-        }
+    }
 
     const prLabelSet = new Set(prLabels);
     const configuredLabelsSet = new Set(configuredLabels);
@@ -62,8 +62,8 @@ class Runner {
     for (const label of prLabelSet) {
       if (!configuredLabelsSet.has(label)) {
         return false;
-          }
       }
+    }
 
     return true;
   }
