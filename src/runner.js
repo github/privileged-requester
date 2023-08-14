@@ -52,12 +52,20 @@ class Runner {
   }
 
   labelsEqual(prLabels, configuredLabels) {
-    return (
-      Array.isArray(prLabels) &&
-      Array.isArray(configuredLabels) &&
-      prLabels.length === configuredLabels.length &&
-      prLabels.every((val, index) => val === configuredLabels[index])
-    );
+    if (prLabels.length !== configuredLabels.length) {
+      return false;
+    }
+
+    const prLabelSet = new Set(prLabels);
+    const configuredLabelsSet = new Set(configuredLabels);
+
+    for (const label of prLabelSet) {
+      if (!configuredLabelsSet.has(label)) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   async processLabels(privileged_requester_config) {
@@ -145,7 +153,7 @@ class Runner {
       }
     }
 
-    // If we've gotten this far, the commits are all from the privileged requestor and the labels are correct
+    // If we've gotten this far, the commits are all from the privileged requester and the labels are correct
     // We can now approve the PR
     await this.pullRequest.approve();
     return true;
