@@ -13,7 +13,7 @@ requesters:
       - github_actions    
     `;
   let provider = new GitHubProvider("token");
-  let spy = jest
+  jest
     .spyOn(provider, "getConfigContent")
     .mockImplementation(() => configContent);
   expect(provider.getConfigContent()).toBe(configContent);
@@ -28,7 +28,7 @@ requesters:
 
 test("We do not receive the expected config content", async () => {
   let provider = new GitHubProvider("token");
-  let spy = jest
+  jest
     .spyOn(provider, "getConfigContent")
     .mockImplementation(() => false);
   expect(provider.getConfigContent()).toBe(false);
@@ -42,7 +42,7 @@ test("We receive malformed yaml from the config content", async () => {
   let configContent = `---
 requeaklfsdhjalkfhlakhfkahlkfah`;
   let provider = new GitHubProvider("token");
-  let spy = jest
+  jest
     .spyOn(provider, "getConfigContent")
     .mockImplementation(() => configContent);
   expect(provider.getConfigContent()).toBe(configContent);

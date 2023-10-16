@@ -14,4 +14,4 @@ const provider = new GitHubProvider(myToken);
 const pullRequest = new PullRequest(provider);
 const privilegedRequester = new PrivilegedRequester(provider);
 const runner = new Runner(pullRequest, privilegedRequester);
-await runner.run();
+runner.run();
