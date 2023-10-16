@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     # checkout the repository
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     # run privileged-requester
     - uses: github/privileged-requester@vX.X.X
@@ -55,17 +55,17 @@ Here are the configuration options for this Action:
 
 | Input     | Required? | Default                                     | Description |
 |-----------| --------- |---------------------------------------------| ----------- |
-| myToken   | yes | ${{ github.token }}                         | The GitHub token used to create an authenticated client - Provided for you by default! |
+| `myToken`   | yes | `${{ github.token }}`                         | The GitHub token used to create an authenticated client - Provided for you by default! |
 | robotUserToken | no | -                                           | An alternative robot user PAT to be used instead of the built-in Actions token |
-| path      | yes | config/privileged-requester.yaml            | Path where the privileged requester configuration can be found |
-| prCreator | yes | ${{ github.event.pull_request.user.login }} | The creator of the PR for this pull request event |
-| prNumber  | yes | ${{ github.event.pull_request.number }}     | The number of the PR for this pull request event |
-| checkCommits | yes | "true"                                       | An option to check that every commit in the PR is made from the privileged requester |
-| checkDiff | yes | "true"                                       | An option to check that the PR diff only has a removal diff, with no additions |
-| checkLabels | yes | "true"                                       | An option to check that the labels on the PR match those defined in the privileged requester config |
+| `path`      | yes | `config/privileged-requester.yaml`            | Path where the privileged requester configuration can be found |
+| `prCreator` | yes | `${{ github.event.pull_request.user.login }}` | The creator of the PR for this pull request event |
+| `prNumber`  | yes | `${{ github.event.pull_request.number }}`     | The number of the PR for this pull request event |
+| `checkCommits` | yes | `"true"`                                       | An option to check that every commit in the PR is made from the privileged requester |
+| `checkDiff` | yes | `"true"`                                       | An option to check that the PR diff only has a removal diff, with no additions |
+| `checkLabels` | yes | `"true"`                                       | An option to check that the labels on the PR match those defined in the privileged requester config |
 
 ## Outputs 📤
 
 | Output | Description |
 | ------ | ----------- |
-| approved | The string "true" if the privileged-requester approved the pull request |
+| `approved` | The string `"true"` if the privileged-requester approved the pull request |
