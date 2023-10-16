@@ -12,7 +12,7 @@ jest.spyOn(core, "setOutput").mockImplementation(() => {});
 
 test("We can create a review", async () => {
   let provider = new GitHubProvider("token");
-  let spy = jest.spyOn(provider, "createReview").mockImplementation(() => true);
+  jest.spyOn(provider, "createReview").mockImplementation(() => true);
   expect(provider.createReview()).toBe(true);
 
   let pullRequest = new PullRequest(provider);
@@ -26,7 +26,7 @@ test("We can list commits", async () => {
     { author: { login: "danhoerst" } },
   ];
   let provider = new GitHubProvider("token");
-  let spy = jest
+  jest
     .spyOn(provider, "listPRCommits")
     .mockImplementation(() => prCommits);
   expect(provider.listPRCommits()).toBe(prCommits);
@@ -39,7 +39,7 @@ test("We can list commits", async () => {
 test("We can list labels", async () => {
   let prLabels = [{ name: "bug" }, { name: "feature-request" }];
   let provider = new GitHubProvider("token");
-  let spy = jest
+  jest
     .spyOn(provider, "listLabelsOnPR")
     .mockImplementation(() => prLabels);
   expect(provider.listLabelsOnPR()).toBe(prLabels);
@@ -64,7 +64,7 @@ index 2f4e8d9..93c2072 100644
          with:
            name: dist`;
   let provider = new GitHubProvider("token");
-  let spy = jest.spyOn(provider, "getPRDiff").mockImplementation(() => prDiff);
+  jest.spyOn(provider, "getPRDiff").mockImplementation(() => prDiff);
   expect(provider.getPRDiff()).toBe(prDiff);
 
   let pullRequest = new PullRequest(provider);
