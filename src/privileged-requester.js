@@ -14,6 +14,8 @@ class PrivilegedRequester {
     if (this.requesters === false) {
       try {
         const config = await this.github.getConfigContent();
+        core.debug(`config: ${config}`);
+
         this.configContents = yaml.load(config);
         this.requesters = this.configContents["requesters"];
       } catch (err) {

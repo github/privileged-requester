@@ -1,6 +1,11 @@
 import { GitHubProvider } from "../src/github-provider";
 import { PrivilegedRequester } from "../src/privileged-requester";
 
+import * as core from "@actions/core";
+
+jest.spyOn(core, "debug").mockImplementation(() => {});
+jest.spyOn(core, "info").mockImplementation(() => {});
+
 test("We receive the expected config content", async () => {
   let configContent = `---
 requesters:

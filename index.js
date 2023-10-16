@@ -6,7 +6,7 @@ import { Runner } from "./src/runner";
 const core = require("@actions/core");
 let myToken = core.getInput("myToken");
 const robotUserToken = core.getInput("robotUserToken");
-if (robotUserToken !== "") {
+if (robotUserToken !== "" || robotUserToken !== undefined || robotUserToken !== null) {
   core.info("Robot User configured. I will use that PAT instead.");
   myToken = robotUserToken;
 }
