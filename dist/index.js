@@ -37005,7 +37005,7 @@ class PrivilegedRequester {
         this.requesters = this.configContents["requesters"];
       } catch (err) {
         lib_core.error(
-          "There was a problem with the privileged requester configuration."
+          `There was a problem with the privileged requester configuration.\n${err}\n${err.stack}`
         );
         lib_core.setFailed(err.message);
         return false;
