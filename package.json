@@ -20,9 +20,10 @@
   "keywords": [
     "GitHub",
     "Actions",
-    "JavaScript"
+    "JavaScript",
+    "pull-request"
   ],
-  "author": "",
+  "author": "GitHub",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/github/privileged-requester/issues"
