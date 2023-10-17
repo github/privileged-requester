@@ -86,3 +86,7 @@ Here are the configuration options for this Action:
 | Output | Description |
 | ------ | ----------- |
 | `approved` | The string `"true"` if the privileged-requester approved the pull request |
+
+## First Time Setup
+
+It should be noted that this Action looks at the `default` branch for its configuration file. This means that if you add this Action through a pull request, it will look at the default branch and _fail_ because it cannot find the config file that has not landed on `main` / `master` yet. After merging the pull request that adds this Action to your repository, it should work as expected.
