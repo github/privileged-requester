@@ -5,12 +5,15 @@ on:
 
 permissions:
   pull-requests: write
+  contents: read
 
 jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - name: checkout
+      uses: actions/checkout@v4
+
     - uses: ./
       with:
         myToken: ${{ secrets.GITHUB_TOKEN }}
