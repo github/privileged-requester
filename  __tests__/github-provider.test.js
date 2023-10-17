@@ -1,6 +1,11 @@
 const nock = require("nock");
 const { GitHubProvider } = require("../src/github-provider");
 
+import * as core from "@actions/core";
+
+jest.spyOn(core, "debug").mockImplementation(() => {});
+jest.spyOn(core, "info").mockImplementation(() => {});
+
 test("It creates an approved review", async () => {
   process.env["GITHUB_REPOSITORY"] = "foo/bar";
 

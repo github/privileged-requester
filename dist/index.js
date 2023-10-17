@@ -36930,6 +36930,9 @@ class GitHubProvider {
   }
 
   async createReview(prNumber, reviewEvent) {
+    core.debug(`prNumber: ${prNumber}`);
+    core.debug(`reviewEvent: ${reviewEvent}`);
+
     await this.octokit.rest.pulls.createReview({
       owner: github.context.repo.owner,
       repo: github.context.repo.repo,
@@ -36939,11 +36942,14 @@ class GitHubProvider {
   }
 
   async getConfigContent() {
+    const path = core.getInput("path", { required: true });
+    core.info(`config path: ${path}`);
+
     // getContent defaults to the main branch
     const { data: configContent } = await this.octokit.rest.repos.getContent({
       owner: github.context.repo.owner,
       repo: github.context.repo.repo,
-      path: core.getInput("path"),
+      path: path,
       mediaType: { format: "raw" },
     });
     return configContent;
@@ -37001,11 +37007,13 @@ class PrivilegedRequester {
     if (this.requesters === false) {
       try {
         const config = await this.github.getConfigContent();
+        lib_core.debug(`config: ${config}`);
+
         this.configContents = yaml.load(config);
         this.requesters = this.configContents["requesters"];
       } catch (err) {
         lib_core.error(
-          "There was a problem with the privileged requester configuration."
+          `There was a problem with the privileged requester configuration.\n${err}\n${err.stack}`
         );
         lib_core.setFailed(err.message);
         return false;
@@ -37237,7 +37245,11 @@ class Runner {
 const index_core = __nccwpck_require__(2186);
 let myToken = index_core.getInput("myToken");
 const robotUserToken = index_core.getInput("robotUserToken");
-if (robotUserToken !== "") {
+if (
+  robotUserToken !== "" ||
+  robotUserToken !== undefined ||
+  robotUserToken !== null
+) {
   index_core.info("Robot User configured. I will use that PAT instead.");
   myToken = robotUserToken;
 }
