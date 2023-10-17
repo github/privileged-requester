@@ -36930,8 +36930,8 @@ class GitHubProvider {
   }
 
   async createReview(prNumber, reviewEvent) {
-    core.debug(`prNumber: ${prNumber}`)
-    core.debug(`reviewEvent: ${reviewEvent}`)
+    core.debug(`prNumber: ${prNumber}`);
+    core.debug(`reviewEvent: ${reviewEvent}`);
 
     await this.octokit.rest.pulls.createReview({
       owner: github.context.repo.owner,
@@ -36942,8 +36942,8 @@ class GitHubProvider {
   }
 
   async getConfigContent() {
-    const path = core.getInput("path", { required: true })
-    core.info(`config path: ${path}`)
+    const path = core.getInput("path", { required: true });
+    core.info(`config path: ${path}`);
 
     // getContent defaults to the main branch
     const { data: configContent } = await this.octokit.rest.repos.getContent({
@@ -37245,7 +37245,11 @@ class Runner {
 const index_core = __nccwpck_require__(2186);
 let myToken = index_core.getInput("myToken");
 const robotUserToken = index_core.getInput("robotUserToken");
-if (robotUserToken !== "" || robotUserToken !== undefined || robotUserToken !== null) {
+if (
+  robotUserToken !== "" ||
+  robotUserToken !== undefined ||
+  robotUserToken !== null
+) {
   index_core.info("Robot User configured. I will use that PAT instead.");
   myToken = robotUserToken;
 }

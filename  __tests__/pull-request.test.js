@@ -26,9 +26,7 @@ test("We can list commits", async () => {
     { author: { login: "danhoerst" } },
   ];
   let provider = new GitHubProvider("token");
-  jest
-    .spyOn(provider, "listPRCommits")
-    .mockImplementation(() => prCommits);
+  jest.spyOn(provider, "listPRCommits").mockImplementation(() => prCommits);
   expect(provider.listPRCommits()).toBe(prCommits);
 
   let pullRequest = new PullRequest(provider);
@@ -39,9 +37,7 @@ test("We can list commits", async () => {
 test("We can list labels", async () => {
   let prLabels = [{ name: "bug" }, { name: "feature-request" }];
   let provider = new GitHubProvider("token");
-  jest
-    .spyOn(provider, "listLabelsOnPR")
-    .mockImplementation(() => prLabels);
+  jest.spyOn(provider, "listLabelsOnPR").mockImplementation(() => prLabels);
   expect(provider.listLabelsOnPR()).toBe(prLabels);
 
   let pullRequest = new PullRequest(provider);

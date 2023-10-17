@@ -11,7 +11,7 @@
     "prepare": "ncc build index.js -o dist --source-map --license licenses.txt",
     "test": "jest",
     "bundle": "npm run format && npm run package",
-    "all": "npm run lint && npm run prepare && npm run test"
+    "all": "npm run lint && npm run format && npm run prepare && npm run test"
   },
   "repository": {
     "type": "git",

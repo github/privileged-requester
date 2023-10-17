@@ -33,9 +33,7 @@ requesters:
 
 test("We do not receive the expected config content", async () => {
   let provider = new GitHubProvider("token");
-  jest
-    .spyOn(provider, "getConfigContent")
-    .mockImplementation(() => false);
+  jest.spyOn(provider, "getConfigContent").mockImplementation(() => false);
   expect(provider.getConfigContent()).toBe(false);
 
   let privilegedRequester = new PrivilegedRequester(provider);

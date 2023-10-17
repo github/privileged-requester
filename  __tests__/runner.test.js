@@ -25,9 +25,7 @@ afterEach(() => {
 describe("processCommits", () => {
   test("We process commits successfully", async () => {
     let prCommits = [{ author: { login: "robot" } }];
-    jest
-      .spyOn(pullRequest, "listCommits")
-      .mockImplementation(() => prCommits);
+    jest.spyOn(pullRequest, "listCommits").mockImplementation(() => prCommits);
     expect(pullRequest.listCommits()).toBe(prCommits);
 
     let commits = await runner.processCommits("robot");
@@ -39,9 +37,7 @@ describe("processCommits", () => {
       { author: { login: "robot" } },
       { author: { login: "danhoerst" } },
     ];
-    jest
-      .spyOn(pullRequest, "listCommits")
-      .mockImplementation(() => prCommits);
+    jest.spyOn(pullRequest, "listCommits").mockImplementation(() => prCommits);
     expect(pullRequest.listCommits()).toBe(prCommits);
 
     let commits = await runner.processCommits("robot");
@@ -63,9 +59,7 @@ index 2f4e8d9..93c2072 100644
          if: blah
          with:
            name: dist`;
-    jest
-      .spyOn(pullRequest, "getDiff")
-      .mockImplementation(() => prDiff);
+    jest.spyOn(pullRequest, "getDiff").mockImplementation(() => prDiff);
     expect(pullRequest.getDiff()).toBe(prDiff);
 
     let diff = await runner.processDiff();
@@ -86,9 +80,7 @@ index 2f4e8d9..93c2072 100644
          if: blah
          with:
            name: dist`;
-    jest
-      .spyOn(pullRequest, "getDiff")
-      .mockImplementation(() => prDiff);
+    jest.spyOn(pullRequest, "getDiff").mockImplementation(() => prDiff);
     expect(pullRequest.getDiff()).toBe(prDiff);
 
     let diff = await runner.processDiff();
@@ -117,9 +109,7 @@ describe("labelsEqual", () => {
 describe("processLabels", () => {
   test("We process labels successfully", async () => {
     let prLabels = [{ name: "bug" }, { name: "feature-request" }];
-    jest
-      .spyOn(pullRequest, "listLabels")
-      .mockImplementation(() => prLabels);
+    jest.spyOn(pullRequest, "listLabels").mockImplementation(() => prLabels);
     expect(pullRequest.listLabels()).toBe(prLabels);
 
     let commits = await runner.processLabels({
@@ -130,9 +120,7 @@ describe("processLabels", () => {
 
   test("We process labels unsuccessfully", async () => {
     let prLabels = [{ name: "bug" }, { name: "feature-request" }];
-    jest
-      .spyOn(pullRequest, "listLabels")
-      .mockImplementation(() => prLabels);
+    jest.spyOn(pullRequest, "listLabels").mockImplementation(() => prLabels);
     expect(pullRequest.listLabels()).toBe(prLabels);
 
     let commits = await runner.processLabels({
@@ -148,15 +136,11 @@ describe("processPrivilegedReviewer", () => {
     process.env["INPUT_CHECKLABELS"] = "true";
     process.env["INPUT_CHECKDIFF"] = "true";
     let prLabels = [{ name: "bug" }, { name: "feature-request" }];
-    jest
-      .spyOn(pullRequest, "listLabels")
-      .mockImplementation(() => prLabels);
+    jest.spyOn(pullRequest, "listLabels").mockImplementation(() => prLabels);
     expect(pullRequest.listLabels()).toBe(prLabels);
 
     let prCommits = [{ author: { login: "robot" } }];
-    jest
-      .spyOn(pullRequest, "listCommits")
-      .mockImplementation(() => prCommits);
+    jest.spyOn(pullRequest, "listCommits").mockImplementation(() => prCommits);
     expect(pullRequest.listCommits()).toBe(prCommits);
 
     let prDiff = `| diff --git a/.github/workflows/check-dist.yml b/.github/workflows/check-dist.yml
@@ -171,9 +155,7 @@ index 2f4e8d9..93c2072 100644
          if: blah
          with:
            name: dist`;
-    jest
-      .spyOn(pullRequest, "getDiff")
-      .mockImplementation(() => prDiff);
+    jest.spyOn(pullRequest, "getDiff").mockImplementation(() => prDiff);
     expect(pullRequest.getDiff()).toBe(prDiff);
 
     let processed = await runner.processPrivilegedReviewer("robot", {
@@ -189,9 +171,7 @@ index 2f4e8d9..93c2072 100644
       { author: { login: "robot" } },
       { author: { login: "malicious" } },
     ];
-    jest
-      .spyOn(pullRequest, "listCommits")
-      .mockImplementation(() => prCommits);
+    jest.spyOn(pullRequest, "listCommits").mockImplementation(() => prCommits);
     expect(pullRequest.listCommits()).toBe(prCommits);
 
     let processed = await runner.processPrivilegedReviewer("robot", {
@@ -205,9 +185,7 @@ index 2f4e8d9..93c2072 100644
       { author: { login: "robot" } },
       { author: { login: "malicious" } },
     ];
-    jest
-      .spyOn(pullRequest, "listCommits")
-      .mockImplementation(() => prCommits);
+    jest.spyOn(pullRequest, "listCommits").mockImplementation(() => prCommits);
     expect(pullRequest.listCommits()).toBe(prCommits);
 
     let processed = await runner.processPrivilegedReviewer("robot", {
@@ -219,9 +197,7 @@ index 2f4e8d9..93c2072 100644
   test("We process labels unsuccessfully with the option enabled", async () => {
     process.env["INPUT_CHECKLABELS"] = "true";
     let prLabels = [{ name: "bug" }, { name: "feature-request" }];
-    jest
-      .spyOn(pullRequest, "listLabels")
-      .mockImplementation(() => prLabels);
+    jest.spyOn(pullRequest, "listLabels").mockImplementation(() => prLabels);
     expect(pullRequest.listLabels()).toBe(prLabels);
 
     let processed = await runner.processPrivilegedReviewer("robot", {
@@ -232,9 +208,7 @@ index 2f4e8d9..93c2072 100644
 
   test("We allow bad labels when the option to check them is not set", async () => {
     let prLabels = [{ name: "bug" }, { name: "feature-request" }];
-    jest
-      .spyOn(pullRequest, "listLabels")
-      .mockImplementation(() => prLabels);
+    jest.spyOn(pullRequest, "listLabels").mockImplementation(() => prLabels);
     expect(pullRequest.listLabels()).toBe(prLabels);
 
     let processed = await runner.processPrivilegedReviewer("robot", {
@@ -258,9 +232,7 @@ index 2f4e8d9..93c2072 100644
          if: blah
          with:
            name: dist`;
-    jest
-      .spyOn(pullRequest, "getDiff")
-      .mockImplementation(() => prDiff);
+    jest.spyOn(pullRequest, "getDiff").mockImplementation(() => prDiff);
     expect(pullRequest.getDiff()).toBe(prDiff);
 
     let processed = await runner.processPrivilegedReviewer("robot", {
@@ -283,9 +255,7 @@ index 2f4e8d9..93c2072 100644
          if: blah
          with:
            name: dist`;
-    jest
-      .spyOn(pullRequest, "getDiff")
-      .mockImplementation(() => prDiff);
+    jest.spyOn(pullRequest, "getDiff").mockImplementation(() => prDiff);
     expect(pullRequest.getDiff()).toBe(prDiff);
 
     let processed = await runner.processPrivilegedReviewer("robot", {

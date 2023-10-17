@@ -11,8 +11,8 @@ class GitHubProvider {
   }
 
   async createReview(prNumber, reviewEvent) {
-    core.debug(`prNumber: ${prNumber}`)
-    core.debug(`reviewEvent: ${reviewEvent}`)
+    core.debug(`prNumber: ${prNumber}`);
+    core.debug(`reviewEvent: ${reviewEvent}`);
 
     await this.octokit.rest.pulls.createReview({
       owner: github.context.repo.owner,
@@ -23,8 +23,8 @@ class GitHubProvider {
   }
 
   async getConfigContent() {
-    const path = core.getInput("path", { required: true })
-    core.info(`config path: ${path}`)
+    const path = core.getInput("path", { required: true });
+    core.info(`config path: ${path}`);
 
     // getContent defaults to the main branch
     const { data: configContent } = await this.octokit.rest.repos.getContent({
