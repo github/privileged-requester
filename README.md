@@ -11,15 +11,32 @@ The workflow should be configured like:
 > Where `vX.X.X` is the latest release version found on the releases page
 
 ```yaml
+name: privileged-requester
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  pull-requests: write
+  contents: read
+
 jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-    # checkout the repository
-    - uses: actions/checkout@v4
+      - name: checkout
+        uses: actions/checkout@v4
 
-    # run privileged-requester
-    - uses: github/privileged-requester@vX.X.X
+      - uses: github/privileged-requester@vX.X.X
+        with:
+          myToken: ${{ secrets.GITHUB_TOKEN }}
+          robotUserToken: ${{ secrets.REPO_GITHUB_TOKEN }}
+          path: config/privileged-requester.yaml
+          prCreator: ${{ github.event.pull_request.user.login }}
+          prNumber: ${{ github.event.pull_request.number }}
+          checkCommits: "true"
+          checkDiff: "true"
+          checkLabels: "true"
 ```
 
 See the example in [the workflow folder](.github/workflows/privileged-requester.yml)
@@ -51,7 +68,7 @@ However, you can configure the Action to run with a different repo scoped token 
 
 Here are the configuration options for this Action:
 
-## Inputs 📥
+### Inputs 📥
 
 | Input     | Required? | Default                                     | Description |
 |-----------| --------- |---------------------------------------------| ----------- |
@@ -64,7 +81,7 @@ Here are the configuration options for this Action:
 | `checkDiff` | yes | `"true"`                                       | An option to check that the PR diff only has a removal diff, with no additions |
 | `checkLabels` | yes | `"true"`                                       | An option to check that the labels on the PR match those defined in the privileged requester config |
 
-## Outputs 📤
+### Outputs 📤
 
 | Output | Description |
 | ------ | ----------- |
