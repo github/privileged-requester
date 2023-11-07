@@ -1,6 +1,6 @@
 # Privileged Requester
 
-[![CodeQL](https://github.com/github/privileged-requester/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/github/privileged-requester/actions/workflows/codeql-analysis.yml) [![package-check](https://github.com/github/privileged-requester/actions/workflows/package-check.yml/badge.svg)](https://github.com/github/privileged-requester/actions/workflows/package-check.yml) [![units-test](https://github.com/github/privileged-requester/actions/workflows/test.yml/badge.svg)](https://github.com/github/privileged-requester/actions/workflows/test.yml) [![privileged-requester](https://github.com/github/privileged-requester/actions/workflows/privileged-requester.yml/badge.svg)](https://github.com/github/privileged-requester/actions/workflows/privileged-requester.yml)
+[![CodeQL](https://github.com/github/privileged-requester/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/github/privileged-requester/actions/workflows/codeql-analysis.yml) [![package-check](https://github.com/github/privileged-requester/actions/workflows/package-check.yml/badge.svg)](https://github.com/github/privileged-requester/actions/workflows/package-check.yml) [![units-test](https://github.com/github/privileged-requester/actions/workflows/test.yml/badge.svg)](https://github.com/github/privileged-requester/actions/workflows/test.yml)
 
 This GitHub Action will automatically approve pull requests based off of requester criteria defined in the target repository.
 
