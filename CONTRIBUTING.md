@@ -1,4 +1,4 @@
-## Contributing
+# Contributing
 
 [fork]: https://github.com/github/privileged-requester/fork
 [pr]: https://github.com/github/privileged-requester/compare
