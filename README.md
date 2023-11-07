@@ -90,3 +90,20 @@ Here are the configuration options for this Action:
 ## First Time Setup
 
 It should be noted that this Action looks at the `default` branch for its configuration file. This means that if you add this Action through a pull request, it will look at the default branch and _fail_ because it cannot find the config file that has not landed on `main` / `master` yet. After merging the pull request that adds this Action to your repository, it should work as expected.
+
+## GitHub App Permissions
+
+If you are using a GitHub app with this Action, you will need to grant the following permissions:
+
+- Checks: `Read and write`
+- Contents: `Read and write`
+- Metadata: `Read-only`
+- Pull requests: `Read and write`
+
+### Subscribe to Events
+
+This GitHub App will subscribe to the following events:
+
+- Check suite
+- Check run
+- Pull request
