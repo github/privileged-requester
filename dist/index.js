@@ -33952,7 +33952,7 @@ function getUserAgent() {
     return navigator.userAgent;
   }
 
-  if (typeof process === "object" && "version" in process) {
+  if (typeof process === "object" && process.version !== undefined) {
     return `Node.js/${process.version.substr(1)} (${process.platform}; ${process.arch})`;
   }
 
@@ -36982,7 +36982,7 @@ class GitHubProvider {
         owner: github.context.repo.owner,
         repo: github.context.repo.repo,
         issue_number: prNumber,
-      }
+      },
     );
     return prLabels;
   }
@@ -37013,7 +37013,7 @@ class PrivilegedRequester {
         this.requesters = this.configContents["requesters"];
       } catch (err) {
         lib_core.error(
-          `There was a problem with the privileged requester configuration.\n${err}\n${err.stack}`
+          `There was a problem with the privileged requester configuration.\n${err}\n${err.stack}`,
         );
         lib_core.setFailed(err.message);
         return false;
@@ -37087,27 +37087,27 @@ class Runner {
   async processCommits(privileged_requester_username) {
     // Check all commits of the PR to verify that they are all from the privileged requester, otherwise return from the check
     lib_core.info(
-      `Commits: Comparing the PR commits to verify that they are all from ${privileged_requester_username}`
+      `Commits: Comparing the PR commits to verify that they are all from ${privileged_requester_username}`,
     );
     for (const [, commit] of Object.entries(this.pullRequest.listCommits())) {
       let commitAuthor = commit.author.login.toLowerCase();
 
       if (commitAuthor !== privileged_requester_username) {
         lib_core.warning(
-          `Unexpected commit author found by ${commitAuthor}! Commits should be authored by ${privileged_requester_username} I will not proceed with the privileged reviewer process.`
+          `Unexpected commit author found by ${commitAuthor}! Commits should be authored by ${privileged_requester_username} I will not proceed with the privileged reviewer process.`,
         );
         return false;
       }
     }
     lib_core.info(
-      `Commits: All commits are made by ${privileged_requester_username}. Success!`
+      `Commits: All commits are made by ${privileged_requester_username}. Success!`,
     );
     return true;
   }
 
   async processDiff() {
     lib_core.info(
-      `Diff: Checking the access diff to verify that there are only removals`
+      `Diff: Checking the access diff to verify that there are only removals`,
     );
     let diff = await this.pullRequest.getDiff();
     let diffArray = diff.split("\n");
@@ -37118,7 +37118,7 @@ class Runner {
       }
       if (diffLine.startsWith("+")) {
         lib_core.warning(
-          `Diff: This PR includes additions which are not allowed with the checkDiff option`
+          `Diff: This PR includes additions which are not allowed with the checkDiff option`,
         );
         return false;
       }
@@ -37155,19 +37155,19 @@ class Runner {
     }
 
     lib_core.info(
-      `Labels: Comparing the PR Labels: ${prLabelArray} with the privileged requester labels: ${privileged_requester_config.labels}`
+      `Labels: Comparing the PR Labels: ${prLabelArray} with the privileged requester labels: ${privileged_requester_config.labels}`,
     );
     if (
       this.labelsEqual(prLabelArray, privileged_requester_config.labels) ===
       false
     ) {
       lib_core.warning(
-        `Labels: Invalid label(s) found. I will not proceed with the privileged reviewer process.`
+        `Labels: Invalid label(s) found. I will not proceed with the privileged reviewer process.`,
       );
       return false;
     }
     lib_core.info(
-      `Labels: Labels on the PR match those in the privileged reviewer config. Success!`
+      `Labels: Labels on the PR match those in the privileged reviewer config. Success!`,
     );
     return true;
   }
@@ -37185,24 +37185,24 @@ class Runner {
       // If privileged_requester_username is not the creator of the PR, move on
       // If privileged_requester_username is the creator of the PR, check the remaining config
       lib_core.info(
-        `PR creator is ${this.pullRequest.prCreator}. Testing against ${privileged_requester_username}`
+        `PR creator is ${this.pullRequest.prCreator}. Testing against ${privileged_requester_username}`,
       );
       if (this.pullRequest.prCreator !== privileged_requester_username) {
         continue;
       }
       await this.processPrivilegedReviewer(
         privileged_requester_username,
-        privileged_requester_config
+        privileged_requester_config,
       );
     }
   }
 
   async processPrivilegedReviewer(
     privileged_requester_username,
-    privileged_requester_config
+    privileged_requester_config,
   ) {
     lib_core.info(
-      `Privileged requester ${privileged_requester_username} found. Checking PR criteria against the privileged requester configuration.`
+      `Privileged requester ${privileged_requester_username} found. Checking PR criteria against the privileged requester configuration.`,
     );
 
     this.checkCommits = lib_core.getInput("checkCommits");
