@@ -63,7 +63,7 @@ class GitHubProvider {
         owner: github.context.repo.owner,
         repo: github.context.repo.repo,
         issue_number: prNumber,
-      }
+      },
     );
     return prLabels;
   }

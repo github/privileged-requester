@@ -11,27 +11,27 @@ class Runner {
   async processCommits(privileged_requester_username) {
     // Check all commits of the PR to verify that they are all from the privileged requester, otherwise return from the check
     core.info(
-      `Commits: Comparing the PR commits to verify that they are all from ${privileged_requester_username}`
+      `Commits: Comparing the PR commits to verify that they are all from ${privileged_requester_username}`,
     );
     for (const [, commit] of Object.entries(this.pullRequest.listCommits())) {
       let commitAuthor = commit.author.login.toLowerCase();
 
       if (commitAuthor !== privileged_requester_username) {
         core.warning(
-          `Unexpected commit author found by ${commitAuthor}! Commits should be authored by ${privileged_requester_username} I will not proceed with the privileged reviewer process.`
+          `Unexpected commit author found by ${commitAuthor}! Commits should be authored by ${privileged_requester_username} I will not proceed with the privileged reviewer process.`,
         );
         return false;
       }
     }
     core.info(
-      `Commits: All commits are made by ${privileged_requester_username}. Success!`
+      `Commits: All commits are made by ${privileged_requester_username}. Success!`,
     );
     return true;
   }
 
   async processDiff() {
     core.info(
-      `Diff: Checking the access diff to verify that there are only removals`
+      `Diff: Checking the access diff to verify that there are only removals`,
     );
     let diff = await this.pullRequest.getDiff();
     let diffArray = diff.split("\n");
@@ -42,7 +42,7 @@ class Runner {
       }
       if (diffLine.startsWith("+")) {
         core.warning(
-          `Diff: This PR includes additions which are not allowed with the checkDiff option`
+          `Diff: This PR includes additions which are not allowed with the checkDiff option`,
         );
         return false;
       }
@@ -79,19 +79,19 @@ class Runner {
     }
 
     core.info(
-      `Labels: Comparing the PR Labels: ${prLabelArray} with the privileged requester labels: ${privileged_requester_config.labels}`
+      `Labels: Comparing the PR Labels: ${prLabelArray} with the privileged requester labels: ${privileged_requester_config.labels}`,
     );
     if (
       this.labelsEqual(prLabelArray, privileged_requester_config.labels) ===
       false
     ) {
       core.warning(
-        `Labels: Invalid label(s) found. I will not proceed with the privileged reviewer process.`
+        `Labels: Invalid label(s) found. I will not proceed with the privileged reviewer process.`,
       );
       return false;
     }
     core.info(
-      `Labels: Labels on the PR match those in the privileged reviewer config. Success!`
+      `Labels: Labels on the PR match those in the privileged reviewer config. Success!`,
     );
     return true;
   }
@@ -109,24 +109,24 @@ class Runner {
       // If privileged_requester_username is not the creator of the PR, move on
       // If privileged_requester_username is the creator of the PR, check the remaining config
       core.info(
-        `PR creator is ${this.pullRequest.prCreator}. Testing against ${privileged_requester_username}`
+        `PR creator is ${this.pullRequest.prCreator}. Testing against ${privileged_requester_username}`,
       );
       if (this.pullRequest.prCreator !== privileged_requester_username) {
         continue;
       }
       await this.processPrivilegedReviewer(
         privileged_requester_username,
-        privileged_requester_config
+        privileged_requester_config,
       );
     }
   }
 
   async processPrivilegedReviewer(
     privileged_requester_username,
-    privileged_requester_config
+    privileged_requester_config,
   ) {
     core.info(
-      `Privileged requester ${privileged_requester_username} found. Checking PR criteria against the privileged requester configuration.`
+      `Privileged requester ${privileged_requester_username} found. Checking PR criteria against the privileged requester configuration.`,
     );
 
     this.checkCommits = core.getInput("checkCommits");
