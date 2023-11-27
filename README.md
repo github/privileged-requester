@@ -6,7 +6,7 @@ This GitHub Action will automatically approve pull requests based off of request
 
 ## Workflow Configuration
 
-The workflow should be configured like:
+Here is an example of how to use this Action in it's simplest form:
 
 > Where `vX.X.X` is the latest release version found on the releases page
 
@@ -24,19 +24,15 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
-        uses: actions/checkout@v4
-
       - uses: github/privileged-requester@vX.X.X
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          path: config/privileged-requester.yaml
-          prCreator: ${{ github.event.pull_request.user.login }}
-          prNumber: ${{ github.event.pull_request.number }}
-          checkCommits: "true"
-          checkDiff: "true"
-          checkLabels: "true"
+          path: config/privileged-requester.yaml # the path on the repo's default branch where the privileged requester config can be found
+          checkCommits: "true" # check to ensure all commits are made by the requester
+          checkDiff: "true" # check to ensure the diff is only removals (no additions) - set to "false" to disable
+          checkLabels: "true" # check to ensure the labels on the PR match those defined in the privileged requester config
 ```
+
+> Note: The `config/privileged-requester.yaml` file should be added to the default branch of the target repository before this workflow is run. Otherwise, the workflow will fail since it cannot find the configuration file.
 
 See the example in [the workflow folder](.github/workflows/privileged-requester.yml)
 
