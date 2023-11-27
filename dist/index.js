@@ -37086,6 +37086,14 @@ class PrivilegedRequester {
 
         this.configContents = yaml.load(config);
         this.requesters = this.configContents["requesters"];
+
+        // set the key (which is the requester name) to lowercase
+        if (this.requesters) {
+          this.requesters = Object.keys(this.requesters).reduce((acc, key) => {
+            acc[key.toLowerCase()] = this.requesters[key];
+            return acc;
+          }, {});
+        }
       } catch (err) {
         lib_core.error(
           `There was a problem with the privileged requester configuration.\n${err}\n${err.stack}`,
