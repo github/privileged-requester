@@ -37318,17 +37318,8 @@ class Runner {
 
 
 const index_core = __nccwpck_require__(2186);
-let myToken = index_core.getInput("myToken");
-const robotUserToken = index_core.getInput("robotUserToken");
-if (
-  robotUserToken !== "" ||
-  robotUserToken !== undefined ||
-  robotUserToken !== null
-) {
-  index_core.info("Robot User configured. I will use that PAT instead.");
-  myToken = robotUserToken;
-}
-const provider = new GitHubProvider(myToken);
+const token = index_core.getInput("github_token", { required: true });
+const provider = new GitHubProvider(token);
 const pullRequest = new PullRequest(provider);
 const privilegedRequester = new PrivilegedRequester(provider);
 const runner = new Runner(pullRequest, privilegedRequester);

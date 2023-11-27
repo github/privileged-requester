@@ -4,9 +4,20 @@
 
 This GitHub Action will automatically approve pull requests based off of requester criteria defined in the target repository.
 
+## Use Case
+
+Let's say you have a repository with a lot of dependabot PRs that are safe to automatically merge because you have a super duper robust test suite. You can use this Action to automatically approve pull requests from the dependabot user (or any other user you want).
+
+Here are some bonus use cases:
+
+- Automatically approve pull requests that were created by some automation that your team wrote
+- Automatically approve pull requests that were created by a bot user that you have created
+- Automatically approve pull requests that were created by a bot user that you have created and that have a specific label
+- Automatically approve pull requests that were created by an admin/priviliged user for your project
+
 ## Workflow Configuration
 
-The workflow should be configured like:
+Here is an example of how to use this Action in its simplest form:
 
 > Where `vX.X.X` is the latest release version found on the releases page
 
@@ -24,20 +35,15 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
-        uses: actions/checkout@v4
-
       - uses: github/privileged-requester@vX.X.X
         with:
-          myToken: ${{ secrets.GITHUB_TOKEN }}
-          robotUserToken: ${{ secrets.REPO_GITHUB_TOKEN }}
-          path: config/privileged-requester.yaml
-          prCreator: ${{ github.event.pull_request.user.login }}
-          prNumber: ${{ github.event.pull_request.number }}
-          checkCommits: "true"
-          checkDiff: "true"
-          checkLabels: "true"
+          path: config/privileged-requester.yaml # the path on the repo's default branch where the privileged requester config can be found
+          checkCommits: "true" # check to ensure all commits are made by the requester
+          checkDiff: "true" # check to ensure the diff is only removals (no additions) - set to "false" to disable
+          checkLabels: "true" # check to ensure the labels on the PR match those defined in the privileged requester config
 ```
+
+> Note: The `config/privileged-requester.yaml` file should be added to the default branch of the target repository before this workflow is run. Otherwise, the workflow will fail since it cannot find the configuration file.
 
 See the example in [the workflow folder](.github/workflows/privileged-requester.yml)
 
@@ -62,7 +68,7 @@ The location of this file in the target repo should be the path used in the work
 
 This Action runs, by default, with the built-in `GITHUB_TOKEN` and so approves the PRs as the `github-actions[bot]` user.
 
-However, you can configure the Action to run with a different repo scoped token - a bot user of your own - by defining the Workflow configuration option `robotUserToken` pointing to the repo secret for that token.
+However, you can configure the Action to run with a different repo scoped token - a bot user of your own - by defining the Workflow configuration option `github_token` pointing to the repo secret for that token.
 
 ## Configuration
 
@@ -72,13 +78,12 @@ Here are the configuration options for this Action:
 
 | Input     | Required? | Default                                     | Description |
 |-----------| --------- |---------------------------------------------| ----------- |
-| `myToken`   | yes | `${{ github.token }}`                         | The GitHub token used to create an authenticated client - Provided for you by default! |
-| robotUserToken | no | -                                           | An alternative robot user PAT to be used instead of the built-in Actions token |
+| `github_token`   | yes | `${{ github.token }}`                         | The GitHub token used to create an authenticated client - Provided for you by default! - You can use the default provided token or you can provide a PAT as an alternative robot user token. Make sure this is a repository scoped token |
 | `path`      | yes | `config/privileged-requester.yaml`            | Path where the privileged requester configuration can be found |
 | `prCreator` | yes | `${{ github.event.pull_request.user.login }}` | The creator of the PR for this pull request event |
 | `prNumber`  | yes | `${{ github.event.pull_request.number }}`     | The number of the PR for this pull request event |
 | `checkCommits` | yes | `"true"`                                       | An option to check that every commit in the PR is made from the privileged requester |
-| `checkDiff` | yes | `"true"`                                       | An option to check that the PR diff only has a removal diff, with no additions |
+| `checkDiff` | yes | `"true"`                                       | An option to check that the PR diff only has a removal diff, with no additions - This option defaults to `"true"` but it can be disabled by setting it to `"false"` |
 | `checkLabels` | yes | `"true"`                                       | An option to check that the labels on the PR match those defined in the privileged requester config |
 
 ### Outputs 📤
