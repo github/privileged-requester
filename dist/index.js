@@ -37256,6 +37256,7 @@ class Runner {
   }
 
   async run() {
+    let approved = false; // a variable to track whether the PR has been approved
     const requesters = await this.privilegedRequesters.getRequesters();
     if (requesters === false) {
       return;
@@ -37273,9 +37274,24 @@ class Runner {
       if (this.pullRequest.prCreator !== privileged_requester_username) {
         continue;
       }
-      await this.processPrivilegedReviewer(
+      let result = await this.processPrivilegedReviewer(
         privileged_requester_username,
         privileged_requester_config,
+      );
+
+      if (result === true) {
+        approved = true;
+        lib_core.info(
+          `Privileged requester ${privileged_requester_username} checks passed.`,
+        );
+      }
+    }
+
+    if (approved === true) {
+      lib_core.info(`✅ Approved!`);
+    } else {
+      lib_core.info(
+        `🙅 No privileged requester found. This pull request will not be approved by this Action`,
       );
     }
   }
