@@ -17,7 +17,7 @@ Here are some bonus use cases:
 
 ## Workflow Configuration
 
-Here is an example of how to use this Action in it's simplest form:
+Here is an example of how to use this Action in its simplest form:
 
 > Where `vX.X.X` is the latest release version found on the releases page
 
