@@ -4,6 +4,17 @@
 
 This GitHub Action will automatically approve pull requests based off of requester criteria defined in the target repository.
 
+## Use Case
+
+Let's say you have a repository with a lot of dependabot PRs that are safe to automatically merge because you have a super duper robust test suite. You can use this Action to automatically approve pull requests from the dependabot user (or any other user you want).
+
+Here are some bonus use cases:
+
+- Automatically approve pull requests that were created by some automation that your team wrote
+- Automatically approve pull requests that were created by a bot user that you have created
+- Automatically approve pull requests that were created by a bot user that you have created and that have a specific label
+- Automatically approve pull requests that were created by an admin/priviliged user for your project
+
 ## Workflow Configuration
 
 Here is an example of how to use this Action in it's simplest form:
@@ -72,7 +83,7 @@ Here are the configuration options for this Action:
 | `prCreator` | yes | `${{ github.event.pull_request.user.login }}` | The creator of the PR for this pull request event |
 | `prNumber`  | yes | `${{ github.event.pull_request.number }}`     | The number of the PR for this pull request event |
 | `checkCommits` | yes | `"true"`                                       | An option to check that every commit in the PR is made from the privileged requester |
-| `checkDiff` | yes | `"true"`                                       | An option to check that the PR diff only has a removal diff, with no additions |
+| `checkDiff` | yes | `"true"`                                       | An option to check that the PR diff only has a removal diff, with no additions - This option defaults to `"true"` but it can be disabled by setting it to `"false"` |
 | `checkLabels` | yes | `"true"`                                       | An option to check that the labels on the PR match those defined in the privileged requester config |
 
 ### Outputs 📤
