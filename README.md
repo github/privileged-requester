@@ -29,8 +29,7 @@ jobs:
 
       - uses: github/privileged-requester@vX.X.X
         with:
-          myToken: ${{ secrets.GITHUB_TOKEN }}
-          robotUserToken: ${{ secrets.REPO_GITHUB_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           path: config/privileged-requester.yaml
           prCreator: ${{ github.event.pull_request.user.login }}
           prNumber: ${{ github.event.pull_request.number }}
@@ -62,7 +61,7 @@ The location of this file in the target repo should be the path used in the work
 
 This Action runs, by default, with the built-in `GITHUB_TOKEN` and so approves the PRs as the `github-actions[bot]` user.
 
-However, you can configure the Action to run with a different repo scoped token - a bot user of your own - by defining the Workflow configuration option `robotUserToken` pointing to the repo secret for that token.
+However, you can configure the Action to run with a different repo scoped token - a bot user of your own - by defining the Workflow configuration option `github_token` pointing to the repo secret for that token.
 
 ## Configuration
 
@@ -72,8 +71,7 @@ Here are the configuration options for this Action:
 
 | Input     | Required? | Default                                     | Description |
 |-----------| --------- |---------------------------------------------| ----------- |
-| `myToken`   | yes | `${{ github.token }}`                         | The GitHub token used to create an authenticated client - Provided for you by default! |
-| robotUserToken | no | -                                           | An alternative robot user PAT to be used instead of the built-in Actions token |
+| `github_token`   | yes | `${{ github.token }}`                         | The GitHub token used to create an authenticated client - Provided for you by default! - You can use the default provided token or you can provide a PAT as an alternative robot user token. Make sure this is a repository scoped token |
 | `path`      | yes | `config/privileged-requester.yaml`            | Path where the privileged requester configuration can be found |
 | `prCreator` | yes | `${{ github.event.pull_request.user.login }}` | The creator of the PR for this pull request event |
 | `prNumber`  | yes | `${{ github.event.pull_request.number }}`     | The number of the PR for this pull request event |
