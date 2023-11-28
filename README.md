@@ -79,6 +79,7 @@ Here are the configuration options for this Action:
 | Input     | Required? | Default                                     | Description |
 |-----------| --------- |---------------------------------------------| ----------- |
 | `github_token`   | yes | `${{ github.token }}`                         | The GitHub token used to create an authenticated client - Provided for you by default! - You can use the default provided token or you can provide a PAT as an alternative robot user token. Make sure this is a repository scoped token |
+| `handle` | yes | `'github-actions[bot]'` | When using the default `${{ github.token }}` (as seen above), the "handle" is fetched from this input since the token is repository scoped and it cannot even read its own handle. You should not need to change this input. |
 | `path`      | yes | `config/privileged-requester.yaml`            | Path where the privileged requester configuration can be found |
 | `prCreator` | yes | `${{ github.event.pull_request.user.login }}` | The creator of the PR for this pull request event |
 | `prNumber`  | yes | `${{ github.event.pull_request.number }}`     | The number of the PR for this pull request event |

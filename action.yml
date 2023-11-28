@@ -11,6 +11,10 @@ inputs:
       You can use the default provided token or you can provide a PAT as an alternative robot user token
     required: true
     default: ${{ github.token }}
+  handle:
+    description: 'When using the default github.token (from above), the "handle" is fetched from this input since the token is repository scoped and it cannot even read its own handle. You should not need to change this input.'
+    required: true
+    default: 'github-actions[bot]'
   path:
     description: 'Path where the privileged requester configuration can be found'
     required: true
