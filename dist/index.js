@@ -37665,9 +37665,32 @@ class GitHubProvider {
   }
 
   async getCurrentUser() {
-    const { data: currentUser } =
-      await this.octokit.rest.users.getAuthenticated();
-    return currentUser.login;
+    let login;
+    try {
+      core.debug(
+        `attempting to get current user via octokit.rest.users.getAuthenticated()`,
+      );
+      const { data: currentUser } =
+        await this.octokit.rest.users.getAuthenticated();
+      login = currentUser.login;
+      core.debug(
+        "obtained current user via octokit.rest.users.getAuthenticated()",
+      );
+    } catch (error) {
+      core.debug(error);
+      core.debug(
+        `octokit.rest.users.getAuthenticated() failed, trying with octokit.rest.apps.getAuthenticated() instead`,
+      );
+      const { data: currentApp } =
+        await this.octokit.rest.apps.getAuthenticated();
+      login = currentApp.slug;
+      core.debug(
+        "obtained current user via octokit.rest.apps.getAuthenticated()",
+      );
+    }
+
+    core.debug(`current user: ${login}`);
+    return login;
   }
 
   // check if the current authenticated user (login) has an active APPROVED review on the PR
