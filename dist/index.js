@@ -37679,14 +37679,13 @@ class GitHubProvider {
     } catch (error) {
       core.debug(error);
       core.debug(
-        `octokit.rest.users.getAuthenticated() failed, trying with octokit.rest.apps.getAuthenticated() instead`,
+        `octokit.rest.users.getAuthenticated() failed, assuming the default input GITHUB_TOKEN is a github-actions[bot] token`,
       );
-      const { data: currentApp } =
-        await this.octokit.rest.apps.getAuthenticated();
-      login = currentApp.slug;
       core.debug(
-        "obtained current user via octokit.rest.apps.getAuthenticated()",
+        `since the GITHUB_TOKEN might be 'github-actions[bot]' we will use the default input option of 'handle' instead`,
       );
+      login = core.getInput("handle", { required: true });
+      core.debug(`handle value: ${login}`);
     }
 
     core.debug(`current user: ${login}`);
