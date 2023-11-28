@@ -113,3 +113,17 @@ This GitHub App will subscribe to the following events:
 - Check suite
 - Check run
 - Pull request
+
+## Known Issues
+
+### Duplicate Approvals
+
+There is logic built into this Action to try and prevent duplicate approvals from taking place. However, if you subscribe to many `pull_request` events in your Actions workflow you may see duplicate approvals. Here is an example of the workflow configuration that could cause this and why:
+
+```yaml
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+```
+
+Now if you were to open a pull request and apply labels to it during the creation process, you would likely see two approvals from this workflow (assuming you pass the privileged requester criteria). This is because the `pull_request` event is triggered twice - once for the `opened` event and once for the `labeled` event. If you want to avoid this, you can remove the `labeled` event from the workflow configuration or the `opened` event.
