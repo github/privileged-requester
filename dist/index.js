@@ -37702,30 +37702,34 @@ class GitHubProvider {
       `checking if ${login} has already approved PR #${prNumber} in a previous workflow run`,
     );
 
+    // get all reviews on the PR
     const { data: reviews } = await this.octokit.rest.pulls.listReviews({
       owner: github.context.repo.owner,
       repo: github.context.repo.repo,
       pull_number: prNumber,
     });
 
-    // filter out all reviews that are not APPROVED
-    const approvedReviews = reviews.filter(
-      (review) => review.state === "APPROVED",
-    );
+    // filter the reviews to only those from the current user and sort them by date descending
+    const userReviews = reviews
+      .filter(
+        (review) => review.user.login.toLowerCase() === login.toLowerCase(),
+      )
+      .sort((a, b) => new Date(b.submitted_at) - new Date(a.submitted_at));
 
-    // filter out all reviews that are not by the current authenticated user via login
-    const approvedReviewsByUser = approvedReviews.filter(
-      (review) => review.user.login.toLowerCase() === login.toLowerCase(),
-    );
+    // attempt to get the latest review from the user (if there are no reviews from the user, this will be undefined)
+    const latestReview = userReviews[0];
 
-    const approved = approvedReviewsByUser.length > 0;
+    // check if the latest review from the user is an APPROVED review and not undefined
+    const approved = latestReview && latestReview.state === "APPROVED";
+
+    // log the result
     if (approved) {
       core.info(
         `${login} has already approved PR #${prNumber} in a previous workflow run`,
       );
     }
 
-    // if there are any reviews left, then login (this Action) has already approved the PR and we should not approve it again
+    // return the result (true if the user has an active APPROVED review, false otherwise)
     return approved;
   }
 
