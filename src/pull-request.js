@@ -15,6 +15,15 @@ class PullRequest {
 
   async approve() {
     try {
+      // before we approved the PR, check to see if this workflow has already approved the PR in a previous run
+      if (await this.github.hasAlreadyApproved(this.prNumber)) {
+        core.info(
+          "PR has already been approved by this Action, skipping duplicate approval.",
+        );
+        core.setOutput("approved", "true"); // set to true as we have already approved the PR at some point
+        return;
+      }
+
       core.info("Approving the PR for a privileged reviewer.");
       await this.github.createReview(this.prNumber, "APPROVE");
       core.info("PR approved, all set!");

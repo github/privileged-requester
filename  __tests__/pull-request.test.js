@@ -1,6 +1,7 @@
 import { GitHubProvider } from "../src/github-provider";
 import { PullRequest } from "../src/pull-request";
 import * as core from "@actions/core";
+const nock = require("nock");
 
 // jest spy on to silence output
 jest.spyOn(core, "info").mockImplementation(() => {});
@@ -10,13 +11,37 @@ jest.spyOn(core, "debug").mockImplementation(() => {});
 jest.spyOn(core, "setFailed").mockImplementation(() => {});
 jest.spyOn(core, "setOutput").mockImplementation(() => {});
 
+beforeEach(() => {
+  jest.clearAllMocks();
+  nock("https://api.github.com")
+    .persist()
+    .get("/user")
+    .reply(200, { login: "octocat" });
+});
+
 test("We can create a review", async () => {
   let provider = new GitHubProvider("token");
+  jest.spyOn(provider, "hasAlreadyApproved").mockImplementation(() => false);
   jest.spyOn(provider, "createReview").mockImplementation(() => true);
   expect(provider.createReview()).toBe(true);
 
   let pullRequest = new PullRequest(provider);
   let approval = await pullRequest.approve();
+  expect(core.info).toHaveBeenCalledWith(
+    "Approving the PR for a privileged reviewer.",
+  );
+  expect(approval).toStrictEqual(undefined);
+});
+
+test("We attempt to create a review but we already approved in a previous workflow run", async () => {
+  let provider = new GitHubProvider("token");
+  jest.spyOn(provider, "hasAlreadyApproved").mockImplementation(() => true);
+
+  let pullRequest = new PullRequest(provider);
+  let approval = await pullRequest.approve();
+  expect(core.info).toHaveBeenCalledWith(
+    "PR has already been approved by this Action, skipping duplicate approval.",
+  );
   expect(approval).toStrictEqual(undefined);
 });
 

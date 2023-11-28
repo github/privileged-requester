@@ -4,6 +4,13 @@ import { PullRequest } from "../src/pull-request";
 import { Runner } from "../src/runner";
 import * as core from "@actions/core";
 
+const nock = require("nock");
+
+nock("https://api.github.com")
+  .persist()
+  .get("/user")
+  .reply(200, { login: "octocat" });
+
 let provider = new GitHubProvider("token");
 let pullRequest = new PullRequest(provider);
 let runner = new Runner(pullRequest);

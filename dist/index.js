@@ -37664,6 +37664,49 @@ class GitHubProvider {
     this.configContent = false;
   }
 
+  async getCurrentUser() {
+    const { data: currentUser } =
+      await this.octokit.rest.users.getAuthenticated();
+    return currentUser.login;
+  }
+
+  // check if the current authenticated user (login) has an active APPROVED review on the PR
+  // returns true if the user has an active APPROVED review, false otherwise
+  // note: if the user had an active APPROVED review but it was dismissed, this will return false
+  async hasAlreadyApproved(prNumber) {
+    // get the login of the current authenticated user
+    const login = await this.getCurrentUser();
+    core.info(
+      `checking if ${login} has already approved PR #${prNumber} in a previous workflow run`,
+    );
+
+    const { data: reviews } = await this.octokit.rest.pulls.listReviews({
+      owner: github.context.repo.owner,
+      repo: github.context.repo.repo,
+      pull_number: prNumber,
+    });
+
+    // filter out all reviews that are not APPROVED
+    const approvedReviews = reviews.filter(
+      (review) => review.state === "APPROVED",
+    );
+
+    // filter out all reviews that are not by the current authenticated user via login
+    const approvedReviewsByUser = approvedReviews.filter(
+      (review) => review.user.login.toLowerCase() === login.toLowerCase(),
+    );
+
+    const approved = approvedReviewsByUser.length > 0;
+    if (approved) {
+      core.info(
+        `${login} has already approved PR #${prNumber} in a previous workflow run`,
+      );
+    }
+
+    // if there are any reviews left, then login (this Action) has already approved the PR and we should not approve it again
+    return approved;
+  }
+
   async createReview(prNumber, reviewEvent) {
     core.debug(`prNumber: ${prNumber}`);
     core.debug(`reviewEvent: ${reviewEvent}`);
@@ -37784,6 +37827,15 @@ class PullRequest {
 
   async approve() {
     try {
+      // before we approved the PR, check to see if this workflow has already approved the PR in a previous run
+      if (await this.github.hasAlreadyApproved(this.prNumber)) {
+        lib_core.info(
+          "PR has already been approved by this Action, skipping duplicate approval.",
+        );
+        lib_core.setOutput("approved", "true"); // set to true as we have already approved the PR at some point
+        return;
+      }
+
       lib_core.info("Approving the PR for a privileged reviewer.");
       await this.github.createReview(this.prNumber, "APPROVE");
       lib_core.info("PR approved, all set!");
