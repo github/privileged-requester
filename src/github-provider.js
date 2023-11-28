@@ -36,7 +36,7 @@ class GitHubProvider {
 
     // filter out all reviews that are not by the current authenticated user via login
     const approvedReviewsByUser = approvedReviews.filter(
-      (review) => review.user.login === login,
+      (review) => review.user.login.toLowerCase() === login.toLowerCase(),
     );
 
     // if there are any reviews left, then login (this Action) has already approved the PR and we should not approve it again
