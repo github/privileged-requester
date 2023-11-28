@@ -37661,7 +37661,18 @@ class GitHubProvider {
   constructor(token) {
     this.token = token;
     this.octokit = github.getOctokit(token);
+
+    this.getCurrentUser().then((login) => {
+      this.login = login;
+    });
+
     this.configContent = false;
+  }
+
+  async getCurrentUser() {
+    const { data: currentUser } =
+      await this.octokit.rest.users.getAuthenticated();
+    return currentUser.login;
   }
 
   async createReview(prNumber, reviewEvent) {
@@ -37785,6 +37796,7 @@ class PullRequest {
   async approve() {
     try {
       lib_core.info("Approving the PR for a privileged reviewer.");
+
       await this.github.createReview(this.prNumber, "APPROVE");
       lib_core.info("PR approved, all set!");
       lib_core.setOutput("approved", "true");

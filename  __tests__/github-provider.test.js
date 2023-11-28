@@ -6,6 +6,14 @@ import * as core from "@actions/core";
 jest.spyOn(core, "debug").mockImplementation(() => {});
 jest.spyOn(core, "info").mockImplementation(() => {});
 
+beforeEach(() => {
+  jest.clearAllMocks();
+  nock("https://api.github.com")
+    .persist()
+    .get("/user")
+    .reply(200, { login: "octocat" });
+});
+
 test("It creates an approved review", async () => {
   process.env["GITHUB_REPOSITORY"] = "foo/bar";
 

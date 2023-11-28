@@ -7,7 +7,18 @@ class GitHubProvider {
   constructor(token) {
     this.token = token;
     this.octokit = github.getOctokit(token);
+
+    this.getCurrentUser().then((login) => {
+      this.login = login;
+    });
+
     this.configContent = false;
+  }
+
+  async getCurrentUser() {
+    const { data: currentUser } =
+      await this.octokit.rest.users.getAuthenticated();
+    return currentUser.login;
   }
 
   async createReview(prNumber, reviewEvent) {
