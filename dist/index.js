@@ -37676,6 +37676,9 @@ class GitHubProvider {
   async hasAlreadyApproved(prNumber) {
     // get the login of the current authenticated user
     const login = await this.getCurrentUser();
+    core.info(
+      `checking if ${login} has already approved PR #${prNumber} in a previous workflow run`,
+    );
 
     const { data: reviews } = await this.octokit.rest.pulls.listReviews({
       owner: github.context.repo.owner,
@@ -37693,8 +37696,15 @@ class GitHubProvider {
       (review) => review.user.login.toLowerCase() === login.toLowerCase(),
     );
 
+    const approved = approvedReviewsByUser.length > 0;
+    if (approved) {
+      core.info(
+        `${login} has already approved PR #${prNumber} in a previous workflow run`,
+      );
+    }
+
     // if there are any reviews left, then login (this Action) has already approved the PR and we should not approve it again
-    return approvedReviewsByUser.length > 0;
+    return approved;
   }
 
   async createReview(prNumber, reviewEvent) {
