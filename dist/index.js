@@ -37709,12 +37709,12 @@ class GitHubProvider {
       pull_number: prNumber,
     });
 
-    // filter the reviews to only those from the current user and sort them by date descending
+    // filter the reviews to only those from the current user and sort them by date (id) descending
     const userReviews = reviews
       .filter(
         (review) => review.user.login.toLowerCase() === login.toLowerCase(),
       )
-      .sort((a, b) => new Date(b.submitted_at) - new Date(a.submitted_at));
+      .sort((a, b) => b.id - a.id);
 
     // attempt to get the latest review from the user (if there are no reviews from the user, this will be undefined)
     const latestReview = userReviews[0];
