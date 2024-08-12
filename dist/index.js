@@ -38121,8 +38121,20 @@ class Runner {
     lib_core.info(
       `Commits: Comparing the PR commits to verify that they are all from ${privileged_requester_username}`,
     );
+
+    var allCommitsVerified = true;
+
     for (const [, commit] of Object.entries(this.pullRequest.listCommits())) {
       let commitAuthor = commit.author.login.toLowerCase();
+
+      if (!commit.verification.verified) {
+        allCommitsVerified = false;
+      
+        if (this.commitVerification === true) {
+          lib_core.warning("Unexpected unverified commit");
+          return false;
+        }
+      }
 
       if (commitAuthor !== privileged_requester_username) {
         lib_core.warning(
@@ -38134,6 +38146,9 @@ class Runner {
     lib_core.info(
       `Commits: All commits are made by ${privileged_requester_username}. Success!`,
     );
+
+    lib_core.setOutput("commits_verified", allCommitsVerified)
+
     return true;
   }
 
@@ -38254,6 +38269,7 @@ class Runner {
     );
 
     this.checkCommits = lib_core.getInput("checkCommits");
+    this.commitVerification = lib_core.getInput("commitVerification");
     if (this.checkCommits === "true") {
       let commits = await this.processCommits(privileged_requester_username);
       if (commits === false) {
