@@ -28,7 +28,7 @@ class Runner {
         if (useCommitVerification === true) {
           core.warning("Unexpected unverified commit");
 
-          // if we are using commit verification, return false
+          // if we are using commit verification and the commit is not signed, return false
           return false;
         }
       }
