@@ -38155,6 +38155,10 @@ class Runner {
 
     lib_core.setOutput("commits_verified", allCommitsVerified);
 
+    if (allCommitsVerified === true) {
+      lib_core.info("Commits: All commits are verified. Success!");
+    }
+
     // if we make it this far, we have verified that all commits are from the privileged requester
     return true;
   }

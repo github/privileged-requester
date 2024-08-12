@@ -42,6 +42,20 @@ describe("processCommits", () => {
     expect(commits).toStrictEqual(true);
   });
 
+  test("We process commits successfully with commit verification", async () => {
+    process.env["INPUT_COMMITVERIFICATION"] = "true";
+    let prCommits = [
+      { author: { login: "robot" }, verification: { verified: true } },
+      { author: { login: "robot" }, verification: { verified: true } },
+      { author: { login: "robot" }, verification: { verified: true } },
+    ];
+    jest.spyOn(pullRequest, "listCommits").mockImplementation(() => prCommits);
+    expect(pullRequest.listCommits()).toBe(prCommits);
+
+    let commits = await runner.processCommits("robot");
+    expect(commits).toStrictEqual(true);
+  });
+
   test("We process commits successfully with missing commit verification objects", async () => {
     process.env["INPUT_COMMITVERIFICATION"] = "false";
     let prCommits = [{ author: { login: "robot" } }];
