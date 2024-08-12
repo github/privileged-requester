@@ -38122,33 +38122,40 @@ class Runner {
       `Commits: Comparing the PR commits to verify that they are all from ${privileged_requester_username}`,
     );
 
-    var allCommitsVerified = true;
+    const useCommitVerification = lib_core.getBooleanInput("commitVerification");
+    const commits = this.pullRequest.listCommits();
+    let allCommitsVerified = true;
 
-    for (const [, commit] of Object.entries(this.pullRequest.listCommits())) {
-      let commitAuthor = commit.author.login.toLowerCase();
+    for (const commit of commits) {
+      const commitAuthor = commit.author.login.toLowerCase();
+      const commitVerification = commit?.verification?.verified;
 
-      if (!commit.verification.verified) {
+      // check if the commit is verified
+      if (!commitVerification) {
         allCommitsVerified = false;
-      
-        if (this.commitVerification === true) {
+        if (useCommitVerification === true) {
           lib_core.warning("Unexpected unverified commit");
+
+          // if we are using commit verification, return false
           return false;
         }
       }
 
       if (commitAuthor !== privileged_requester_username) {
         lib_core.warning(
-          `Unexpected commit author found by ${commitAuthor}! Commits should be authored by ${privileged_requester_username} I will not proceed with the privileged reviewer process.`,
+          `Unexpected commit author found by ${commitAuthor}! Commits should be authored by ${privileged_requester_username}. I will not proceed with the privileged reviewer process.`,
         );
         return false;
       }
     }
+
     lib_core.info(
       `Commits: All commits are made by ${privileged_requester_username}. Success!`,
     );
 
-    lib_core.setOutput("commits_verified", allCommitsVerified)
+    lib_core.setOutput("commits_verified", allCommitsVerified);
 
+    // if we make it this far, we have verified that all commits are from the privileged requester
     return true;
   }
 
@@ -38269,7 +38276,6 @@ class Runner {
     );
 
     this.checkCommits = lib_core.getInput("checkCommits");
-    this.commitVerification = lib_core.getInput("commitVerification");
     if (this.checkCommits === "true") {
       let commits = await this.processCommits(privileged_requester_username);
       if (commits === false) {

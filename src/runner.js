@@ -13,15 +13,15 @@ class Runner {
     core.info(
       `Commits: Comparing the PR commits to verify that they are all from ${privileged_requester_username}`,
     );
-  
+
     const useCommitVerification = core.getBooleanInput("commitVerification");
     const commits = this.pullRequest.listCommits();
     let allCommitsVerified = true;
-  
+
     for (const commit of commits) {
       const commitAuthor = commit.author.login.toLowerCase();
       const commitVerification = commit?.verification?.verified;
-  
+
       // check if the commit is verified
       if (!commitVerification) {
         allCommitsVerified = false;
@@ -32,7 +32,7 @@ class Runner {
           return false;
         }
       }
-  
+
       if (commitAuthor !== privileged_requester_username) {
         core.warning(
           `Unexpected commit author found by ${commitAuthor}! Commits should be authored by ${privileged_requester_username}. I will not proceed with the privileged reviewer process.`,
@@ -40,7 +40,7 @@ class Runner {
         return false;
       }
     }
-  
+
     core.info(
       `Commits: All commits are made by ${privileged_requester_username}. Success!`,
     );
