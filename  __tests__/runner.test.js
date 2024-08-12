@@ -5,6 +5,7 @@ import { Runner } from "../src/runner";
 import * as core from "@actions/core";
 
 const nock = require("nock");
+const sha = "deadbeef";
 
 nock("https://api.github.com")
   .persist()
@@ -33,7 +34,7 @@ describe("processCommits", () => {
   test("We process commits successfully", async () => {
     process.env["INPUT_COMMITVERIFICATION"] = "false";
     let prCommits = [
-      { author: { login: "robot" }, verification: { verified: false } },
+      { author: { login: "robot" }, verification: { verified: false }, sha },
     ];
     jest.spyOn(pullRequest, "listCommits").mockImplementation(() => prCommits);
     expect(pullRequest.listCommits()).toBe(prCommits);
@@ -45,9 +46,9 @@ describe("processCommits", () => {
   test("We process commits successfully with commit verification", async () => {
     process.env["INPUT_COMMITVERIFICATION"] = "true";
     let prCommits = [
-      { author: { login: "robot" }, verification: { verified: true } },
-      { author: { login: "robot" }, verification: { verified: true } },
-      { author: { login: "robot" }, verification: { verified: true } },
+      { author: { login: "robot" }, verification: { verified: true }, sha },
+      { author: { login: "robot" }, verification: { verified: true }, sha },
+      { author: { login: "robot" }, verification: { verified: true }, sha },
     ];
     jest.spyOn(pullRequest, "listCommits").mockImplementation(() => prCommits);
     expect(pullRequest.listCommits()).toBe(prCommits);
@@ -58,7 +59,7 @@ describe("processCommits", () => {
 
   test("We process commits successfully with missing commit verification objects", async () => {
     process.env["INPUT_COMMITVERIFICATION"] = "false";
-    let prCommits = [{ author: { login: "robot" } }];
+    let prCommits = [{ author: { login: "robot" }, sha }];
     jest.spyOn(pullRequest, "listCommits").mockImplementation(() => prCommits);
     expect(pullRequest.listCommits()).toBe(prCommits);
 
@@ -72,7 +73,7 @@ describe("processCommits without verification", () => {
     jest.clearAllMocks();
     process.env["INPUT_COMMITVERIFICATION"] = "true";
     let prCommits = [
-      { author: { login: "robot" }, verification: { verified: false } },
+      { author: { login: "robot" }, verification: { verified: false }, sha },
     ];
     jest.spyOn(pullRequest, "listCommits").mockImplementation(() => prCommits);
     expect(pullRequest.listCommits()).toBe(prCommits);
@@ -83,7 +84,7 @@ describe("processCommits without verification", () => {
 
   test("We process commits unsuccessfully with missing commit verification objects", async () => {
     process.env["INPUT_COMMITVERIFICATION"] = "true";
-    let prCommits = [{ author: { login: "robot" } }];
+    let prCommits = [{ author: { login: "robot" }, sha }];
     jest.spyOn(pullRequest, "listCommits").mockImplementation(() => prCommits);
     expect(pullRequest.listCommits()).toBe(prCommits);
 
@@ -188,7 +189,7 @@ describe("processPrivilegedReviewer", () => {
     expect(pullRequest.listLabels()).toBe(prLabels);
 
     let prCommits = [
-      { author: { login: "robot" }, verification: { verified: false } },
+      { author: { login: "robot" }, verification: { verified: false }, sha },
     ];
     jest.spyOn(pullRequest, "listCommits").mockImplementation(() => prCommits);
     expect(pullRequest.listCommits()).toBe(prCommits);
@@ -218,8 +219,12 @@ index 2f4e8d9..93c2072 100644
     process.env["INPUT_CHECKCOMMITS"] = "true";
 
     let prCommits = [
-      { author: { login: "robot" }, verification: { verified: false } },
-      { author: { login: "malicious" }, verification: { verified: false } },
+      { author: { login: "robot" }, verification: { verified: false }, sha },
+      {
+        author: { login: "malicious" },
+        verification: { verified: false },
+        sha,
+      },
     ];
     jest.spyOn(pullRequest, "listCommits").mockImplementation(() => prCommits);
     expect(pullRequest.listCommits()).toBe(prCommits);
@@ -235,8 +240,12 @@ index 2f4e8d9..93c2072 100644
     process.env["INPUT_COMMITVERIFICATION"] = "true";
 
     let prCommits = [
-      { author: { login: "robot" }, verification: { verified: false } },
-      { author: { login: "malicious" }, verification: { verified: false } },
+      { author: { login: "robot" }, verification: { verified: false }, sha },
+      {
+        author: { login: "malicious" },
+        verification: { verified: false },
+        sha,
+      },
     ];
     jest.spyOn(pullRequest, "listCommits").mockImplementation(() => prCommits);
     expect(pullRequest.listCommits()).toBe(prCommits);
@@ -249,8 +258,8 @@ index 2f4e8d9..93c2072 100644
 
   test("We allow bad commits when the option to check them is not set", async () => {
     let prCommits = [
-      { author: { login: "robot" } },
-      { author: { login: "malicious" } },
+      { author: { login: "robot" }, sha },
+      { author: { login: "malicious" }, sha },
     ];
     jest.spyOn(pullRequest, "listCommits").mockImplementation(() => prCommits);
     expect(pullRequest.listCommits()).toBe(prCommits);
