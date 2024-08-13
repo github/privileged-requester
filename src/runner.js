@@ -17,7 +17,12 @@ class Runner {
     const useCommitVerification = core.getBooleanInput("commitVerification");
     let allCommitsVerified = true;
 
-    for (const [, commit] of Object.entries(this.pullRequest.listCommits())) {
+    const commits = Object.entries(this.pullRequest.listCommits());
+
+    core.debug(`checking commits: ${commits.length}`);
+    core.debug(`commits debug: ${JSON.stringify(commits)}`);
+
+    for (const [, commit] of commits) {
       const commitAuthor = commit.author.login.toLowerCase();
       const commitVerification = commit?.verification?.verified;
       const sha = commit?.sha;
