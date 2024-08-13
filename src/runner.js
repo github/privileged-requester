@@ -17,7 +17,7 @@ class Runner {
     const useCommitVerification = core.getBooleanInput("commitVerification");
     let allCommitsVerified = true;
 
-    const commits = Object.entries(this.pullRequest.listCommits());
+    const commits = Object.entries(await this.pullRequest.listCommits());
 
     core.debug(`checking commits: ${commits.length}`);
     core.debug(`commits debug: ${JSON.stringify(commits)}`);
