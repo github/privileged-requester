@@ -38128,7 +38128,6 @@ class Runner {
     const commits = Object.entries(await this.pullRequest.listCommits());
 
     lib_core.debug(`checking commits: ${commits.length}`);
-    lib_core.debug(`commits debug: ${JSON.stringify(commits)}`);
 
     for (const [, commit] of commits) {
       const commitAuthor = commit.author.login.toLowerCase();
