@@ -39,9 +39,15 @@ inputs:
     description: 'An option to check that the labels on the PR match those defined in the privileged requester config'
     required: true
     default: 'true'
+  commitVerification:
+    description: 'Whether or not to validate all commits have proper verification via GPG signed commits'
+    required: true
+    default: 'false'
 outputs:
   approved: # output will be available to future steps
     description: "Whether or not the PR was approved - 'true' or 'false'"
+  commits_verified:
+    description: The string "true" if all commits in the PR are signed/verified
 runs:
   using: 'node20'
   main: 'dist/index.js'
