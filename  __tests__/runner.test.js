@@ -34,7 +34,11 @@ describe("processCommits", () => {
   test("We process commits successfully", async () => {
     process.env["INPUT_COMMITVERIFICATION"] = "false";
     let prCommits = [
-      { author: { login: "robot" }, verification: { verified: false }, sha },
+      {
+        author: { login: "robot" },
+        commit: { verification: { verified: false } },
+        sha,
+      },
     ];
     jest.spyOn(pullRequest, "listCommits").mockImplementation(() => prCommits);
     expect(pullRequest.listCommits()).toBe(prCommits);
@@ -46,9 +50,21 @@ describe("processCommits", () => {
   test("We process commits successfully with commit verification", async () => {
     process.env["INPUT_COMMITVERIFICATION"] = "true";
     let prCommits = [
-      { author: { login: "robot" }, verification: { verified: true }, sha },
-      { author: { login: "robot" }, verification: { verified: true }, sha },
-      { author: { login: "robot" }, verification: { verified: true }, sha },
+      {
+        author: { login: "robot" },
+        commit: { verification: { verified: true } },
+        sha,
+      },
+      {
+        author: { login: "robot" },
+        commit: { verification: { verified: true } },
+        sha,
+      },
+      {
+        author: { login: "robot" },
+        commit: { verification: { verified: true } },
+        sha,
+      },
     ];
     jest.spyOn(pullRequest, "listCommits").mockImplementation(() => prCommits);
     expect(pullRequest.listCommits()).toBe(prCommits);
@@ -73,7 +89,11 @@ describe("processCommits without verification", () => {
     jest.clearAllMocks();
     process.env["INPUT_COMMITVERIFICATION"] = "true";
     let prCommits = [
-      { author: { login: "robot" }, verification: { verified: false }, sha },
+      {
+        author: { login: "robot" },
+        commit: { verification: { verified: false } },
+        sha,
+      },
     ];
     jest.spyOn(pullRequest, "listCommits").mockImplementation(() => prCommits);
     expect(pullRequest.listCommits()).toBe(prCommits);
@@ -189,7 +209,11 @@ describe("processPrivilegedReviewer", () => {
     expect(pullRequest.listLabels()).toBe(prLabels);
 
     let prCommits = [
-      { author: { login: "robot" }, verification: { verified: false }, sha },
+      {
+        author: { login: "robot" },
+        commit: { verification: { verified: false } },
+        sha,
+      },
     ];
     jest.spyOn(pullRequest, "listCommits").mockImplementation(() => prCommits);
     expect(pullRequest.listCommits()).toBe(prCommits);
@@ -219,10 +243,14 @@ index 2f4e8d9..93c2072 100644
     process.env["INPUT_CHECKCOMMITS"] = "true";
 
     let prCommits = [
-      { author: { login: "robot" }, verification: { verified: false }, sha },
+      {
+        author: { login: "robot" },
+        commit: { verification: { verified: false } },
+        sha,
+      },
       {
         author: { login: "malicious" },
-        verification: { verified: false },
+        commit: { verification: { verified: false } },
         sha,
       },
     ];
@@ -240,10 +268,14 @@ index 2f4e8d9..93c2072 100644
     process.env["INPUT_COMMITVERIFICATION"] = "true";
 
     let prCommits = [
-      { author: { login: "robot" }, verification: { verified: false }, sha },
+      {
+        author: { login: "robot" },
+        commit: { verification: { verified: false } },
+        sha,
+      },
       {
         author: { login: "malicious" },
-        verification: { verified: false },
+        commit: { verification: { verified: false } },
         sha,
       },
     ];
