@@ -38144,7 +38144,7 @@ class Runner {
 
     for (const [, commit] of commits) {
       const commitAuthor = commit.author.login.toLowerCase();
-      const commitVerification = commit?.verification?.verified;
+      const commitVerification = commit?.commit?.verification?.verified;
       const sha = commit?.sha;
 
       lib_core.debug(`checking commit: ${sha}`);
