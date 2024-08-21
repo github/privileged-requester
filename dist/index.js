@@ -38154,6 +38154,9 @@ class Runner {
         allCommitsVerified = false;
         if (useCommitVerification === true) {
           lib_core.warning(`Unexpected unverified commit - sha: ${sha}`);
+          lib_core.warning(`commit.verification.verified: ${commitVerification}`);
+
+          lib_core.debug(`commit: ${JSON.stringify(commit, null, 2)}`);
 
           // if we are using commit verification and the commit is not signed, return false
           return false;
