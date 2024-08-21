@@ -86,12 +86,14 @@ Here are the configuration options for this Action:
 | `checkCommits` | yes | `"true"`                                       | An option to check that every commit in the PR is made from the privileged requester |
 | `checkDiff` | yes | `"true"`                                       | An option to check that the PR diff only has a removal diff, with no additions - This option defaults to `"true"` but it can be disabled by setting it to `"false"` |
 | `checkLabels` | yes | `"true"`                                       | An option to check that the labels on the PR match those defined in the privileged requester config |
+| `commitVerification` | yes | `"false"` | Whether or not to validate all commits have proper verification via GPG signed commits |
 
 ### Outputs 📤
 
 | Output | Description |
 | ------ | ----------- |
 | `approved` | The string `"true"` if the privileged-requester approved the pull request |
+| `commits_verified` | The string `"true"` if all commits in the PR are signed/verified |
 
 ## First Time Setup
 

@@ -38121,19 +38121,51 @@ class Runner {
     lib_core.info(
       `Commits: Comparing the PR commits to verify that they are all from ${privileged_requester_username}`,
     );
-    for (const [, commit] of Object.entries(this.pullRequest.listCommits())) {
-      let commitAuthor = commit.author.login.toLowerCase();
+
+    const useCommitVerification = lib_core.getBooleanInput("commitVerification");
+    let allCommitsVerified = true;
+
+    const commits = Object.entries(await this.pullRequest.listCommits());
+
+    lib_core.debug(`checking commits: ${commits.length}`);
+
+    for (const [, commit] of commits) {
+      const commitAuthor = commit.author.login.toLowerCase();
+      const commitVerification = commit?.verification?.verified;
+      const sha = commit?.sha;
+
+      lib_core.debug(`checking commit: ${sha}`);
+
+      // check if the commit is verified
+      if (!commitVerification) {
+        allCommitsVerified = false;
+        if (useCommitVerification === true) {
+          lib_core.warning(`Unexpected unverified commit - sha: ${sha}`);
+
+          // if we are using commit verification and the commit is not signed, return false
+          return false;
+        }
+      }
 
       if (commitAuthor !== privileged_requester_username) {
         lib_core.warning(
-          `Unexpected commit author found by ${commitAuthor}! Commits should be authored by ${privileged_requester_username} I will not proceed with the privileged reviewer process.`,
+          `Unexpected commit author found by ${commitAuthor}! Commits should be authored by ${privileged_requester_username}. I will not proceed with the privileged reviewer process - sha: ${sha}`,
         );
         return false;
       }
     }
+
     lib_core.info(
       `Commits: All commits are made by ${privileged_requester_username}. Success!`,
     );
+
+    lib_core.setOutput("commits_verified", allCommitsVerified);
+
+    if (allCommitsVerified === true) {
+      lib_core.info("Commits: All commits are verified. Success!");
+    }
+
+    // if we make it this far, we have verified that all commits are from the privileged requester
     return true;
   }
 
