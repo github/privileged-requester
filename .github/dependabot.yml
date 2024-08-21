@@ -1,11 +1,19 @@
+---
 version: 2
 updates:
   - package-ecosystem: github-actions
-    directory: /
+    directory: "/"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
     schedule:
-      interval: daily
-
+      interval: monthly
   - package-ecosystem: npm
-    directory: /
+    directory: "/"
+    groups:
+      npm-dependencies:
+        patterns:
+          - "*"
     schedule:
-      interval: daily
+      interval: monthly
