@@ -22,7 +22,21 @@ class Runner {
     core.debug(`checking commits: ${commits.length}`);
 
     for (const [, commit] of commits) {
-      const commitAuthor = commit.author.login.toLowerCase();
+      var commitAuthor = null;
+      try {
+        commitAuthor = commit.author.login.toLowerCase();
+      } catch (e) {
+        if (core.getBooleanInput("fallback_to_commit_author") === true) {
+          core.debug(`commit.author.login not found: ${e}`);
+          core.debug(
+            `trying commit.commit.author.name: ${commit.commit.author.name}`,
+          );
+          commitAuthor = commit.commit.author.name.toLowerCase();
+        } else {
+          throw new Error(`commit.author.login not found: ${e}`);
+        }
+      }
+
       const commitVerification = commit?.commit?.verification?.verified;
       const sha = commit?.sha;
 

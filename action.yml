@@ -43,6 +43,10 @@ inputs:
     description: 'Whether or not to validate all commits have proper verification via GPG signed commits'
     required: true
     default: 'false'
+  fallback_to_commit_author:
+    description: 'Whether or not to fallback to the commit author value if the commit login value is missing'
+    required: true
+    default: 'false'
 outputs:
   approved: # output will be available to future steps
     description: "Whether or not the PR was approved - 'true' or 'false'"
