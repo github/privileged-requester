@@ -87,6 +87,7 @@ Here are the configuration options for this Action:
 | `checkDiff` | yes | `"true"`                                       | An option to check that the PR diff only has a removal diff, with no additions - This option defaults to `"true"` but it can be disabled by setting it to `"false"` |
 | `checkLabels` | yes | `"true"`                                       | An option to check that the labels on the PR match those defined in the privileged requester config |
 | `commitVerification` | yes | `"false"` | Whether or not to validate all commits have proper verification via GPG signed commits |
+| `fallback_to_commit_author` | no | `"false"` | Whether or not to fallback to the commit author value if the commit login value is missing |
 
 ### Outputs 📤
 
