@@ -39,8 +39,8 @@
     "@babel/plugin-transform-modules-commonjs": "^7.27.1",
     "@vercel/ncc": "^0.38.3",
     "eslint": "=9.21.0",
-    "jest": "^30.0.3",
-    "nock": "^14.0.5",
+    "jest": "^30.0.5",
+    "nock": "^14.0.8",
     "prettier": "^3.6.2"
   }
 }
